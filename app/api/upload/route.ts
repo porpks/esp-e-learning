@@ -1,0 +1,59 @@
+import { NextResponse } from 'next/server';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+
+// นำเข้าตัวเชื่อมต่อ Database
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+
+// ตั้งค่า Adapter สำหรับ MariaDB (ใส่รหัสผ่านของคุณ)
+const adapter = new PrismaMariaDb({
+  host: 'localhost',
+  user: 'root',
+  password: 'Esp@as0ke',
+  database: 'knowledge_db',
+  port: 3306
+});
+
+// เรียกใช้ Prisma โดยยัด Adapter เข้าไป
+const prisma = new PrismaClient({ adapter });
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.formData();
+    const file: File | null = data.get('file') as unknown as File;
+    const title = data.get('title') as string;
+
+    if (!file) {
+      return NextResponse.json({ error: 'ไม่พบไฟล์ที่อัปโหลด' }, { status: 400 });
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const uniqueName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    
+    await mkdir(uploadDir, { recursive: true });
+
+    const filePath = path.join(uploadDir, uniqueName);
+    await writeFile(filePath, buffer);
+
+    const document = await prisma.document.create({
+      data: {
+        title: title || file.name,
+        fileType: file.type,
+        filePath: `/uploads/${uniqueName}`,
+        uploaderId: 1, 
+      }
+    });
+
+    return NextResponse.json({ success: true, document });
+
+  } catch (error: any) {
+    console.error('Upload Error Details:', error);
+    return NextResponse.json(
+      { error: error.message || 'ระบบหลังบ้านเกิดข้อผิดพลาด' }, 
+      { status: 500 }
+    );
+  }
+}
