@@ -1,20 +1,51 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-
-// นำเข้าไลบรารี activedirectory2
+import { prisma } from '@/lib/prisma';
 const ActiveDirectory = require('activedirectory2');
 
-// ตั้งค่า Adapter สำหรับ MariaDB
-const adapter = new PrismaMariaDb({
-  host: 'localhost',
-  user: 'root',
-  password: 'Esp@as0ke',
-  database: 'knowledge_db',
-  port: 3306
-});
+// 🌟 จำลองฟังก์ชันเชื่อมต่อ Database ที่ 2 (dataUserEmp)
+async function fetchEmpIdFromExternalDB(adUsername: string) {
+  console.log(`Searching real empId for AD User: ${adUsername}`);
+  
+  const dataUserEmpTable = [
+    { 
+        id: 1, 
+        empId: '5328', 
+        username: 'Pakapong_s', 
+        fullName: 'Pakapong Sathianchok', 
+        department: 'System',
+        team: 'Software',
+        role: 'USER',
+        isActive: true 
+    },
+    { 
+        id: 2, 
+        empId: '5332', 
+        username: 'Thanawadee_t', 
+        fullName: 'Thanawadee Thongpak', 
+        department: 'System',
+        team: 'System',
+        role: 'USER',
+        isActive: true 
+    },
+  ];
 
-const prisma = new PrismaClient({ adapter });
+  const foundUserRow = dataUserEmpTable.find(
+    (row) => row.username.toLowerCase() === adUsername.toLowerCase()
+  );
+
+  if (foundUserRow && foundUserRow.isActive) {
+    console.log(`Found empId: ${foundUserRow.empId} for user: ${adUsername}`);
+    return { 
+      empId: foundUserRow.empId, 
+      fullName: foundUserRow.fullName, 
+      department: foundUserRow.department, 
+      team: foundUserRow.team, 
+      role: foundUserRow.role 
+    };
+  }
+
+  return { empId: null, fullName: null, department: null, team: null, role: null };
+}
 
 export async function POST(request: Request) {
   try {
@@ -26,62 +57,168 @@ export async function POST(request: Request) {
     }
 
     // ==========================================
-    // 🌟 1. ตั้งค่าการเชื่อมต่อ Active Directory
+    // 🚀 1. ระบบ Bypass สำหรับ Test Users (Dev Mode)
     // ==========================================
+    const testUsers = [
+        { empId: '1001', username: 'Admin_Test' },
+        { empId: '1002', username: 'Manager_Test' },
+        { empId: '1003', username: 'LeadCAD_Test' },
+        { empId: '1004', username: 'LeadNX_Test' },
+        { empId: '1005', username: 'LeadSYS_Test' },
+        { empId: '1006', username: 'UserCAD_Test' },
+        { empId: '1007', username: 'UserNX_Test' },
+        { empId: '1008', username: 'UserSYS_Test' }
+    ];
+    const testPassword = 'Esp@as0ke';
+
+    const isTestUser = testUsers.some(user => user.username === username);
+    
+    if (isTestUser && password === testPassword) {
+      const testUser = await prisma.user.findUnique({
+        where: { empId: testUsers.find(user => user.username === username)?.empId || 'non-existent' }
+      });
+
+      if (testUser) {
+        const response = NextResponse.json({ success: true, user: testUser });
+        
+        response.cookies.set('user_session', JSON.stringify({
+            id: testUser.id,
+            empId: testUser.empId,
+            username: testUser.username,         // ใช้ login แทน username
+            firstName: testUser.firstName, // เพิ่ม firstName
+            lastName: testUser.lastName,   // เพิ่ม lastName
+            email: testUser.email,         // เพิ่ม email
+            department: testUser.department,
+            team: testUser.team,
+            role: testUser.role,
+            isAdmin: testUser.isAdmin,
+            profileImage: testUser.profileImage || null, // เพิ่ม profileImage
+        }), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 1,
+        });
+
+        return response;
+      }
+    }
+
+    // ==========================================
+    // 🔐 2. ระบบ Active Directory (Production)
+    // ==========================================
+    const userPrincipalName = `${username}@esp-group.asia`;
     const config = {
       url: 'ldap://192.168.1.3',
-      // ปรับ baseDN อัตโนมัติตามชื่อโดเมน
       baseDN: 'dc=esp-group,dc=asia', 
     };
-
-    const ad = new ActiveDirectory(config);
     
-    // ==========================================
-    // 🌟 2. ประกอบร่างชื่อ Username + Domain
-    // ==========================================
-    // เติม @esp-group.asia เข้าไปด้านหลังให้อัตโนมัติ!
-    const userPrincipalName = `${username}@esp-group.asia`;
+    const ad = new ActiveDirectory(config);
 
-    // ฟังก์ชันสำหรับเช็กรหัสผ่านกับ AD
-    const authenticateAD = () => {
-      return new Promise((resolve, reject) => {
-        ad.authenticate(userPrincipalName, password, function(err: any, auth: boolean) {
-          if (err) {
-            console.error('AD Auth Error:', err);
-            return resolve(false); // ล็อกอินไม่ผ่าน
+    const authenticateAndFindUser = () => {
+      return new Promise((resolve) => {
+        ad.authenticate(userPrincipalName, password, (err: any, auth: boolean) => {
+          if (err || !auth) {
+            return resolve(null);
           }
-          resolve(auth); // ล็อกอินผ่าน
+          
+          ad.findUser(userPrincipalName, (findErr: any, adUser: any) => {
+            if (findErr || !adUser) {
+              return resolve({ displayName: username, department: null });
+            }
+            resolve(adUser);
+          });
         });
       });
     };
 
-    // สั่งรันการตรวจสอบรหัสผ่าน
-    const isAuthenticated = await authenticateAD();
-
-    if (!isAuthenticated) {
+    const adUser: any = await authenticateAndFindUser();
+    
+    if (!adUser) {
       return NextResponse.json({ error: 'Username หรือ Password ไม่ถูกต้อง' }, { status: 401 });
     }
 
     // ==========================================
-    // 🌟 3. ถ้ารหัสผ่าน AD ถูกต้อง มาเช็กสิทธิ์ใน MariaDB
+    // 🔄 3. ค้นหา empId จริงจาก external DB
+    // ==========================================
+    const externalData = await fetchEmpIdFromExternalDB(username);
+    const realEmpId = externalData.empId;
+    const fullName = externalData.fullName;
+    const departmentName = externalData.department;
+    const teamName = externalData.team;
+
+    if (!realEmpId) {
+      return NextResponse.json({ error: 'ไม่พบข้อมูลรหัสพนักงานในฐานข้อมูลกลาง' }, { status: 404 });
+    }
+
+    console.log(`adUser found: ${JSON.stringify(adUser)} | realEmpId: ${realEmpId}`);
+    
+    const nameDisplay = fullName || adUser.displayName || adUser.cn || username;
+    const nameParts = nameDisplay.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    
+    const userEmail = adUser.mail || `${username}@esp-group.asia`;
+
+    // ==========================================
+    // 💾 4. Auto-provisioning & อัปเดตข้อมูลใน MariaDB (LMS)
     // ==========================================
     let user = await prisma.user.findUnique({
-      where: { empId: username } 
+      where: { empId: realEmpId } 
     });
 
-    // ถ้าไม่มีในระบบเรา ให้สร้างบัญชีใหม่ให้อัตโนมัติเลย (ใช้ชื่อ pacharaphol_k เป็น empId)
     if (!user) {
       user = await prisma.user.create({
         data: {
-          empId: username,
-          name: username, 
-          role: 'User'
+          empId: realEmpId,
+          username: username,
+          firstName: firstName,
+          lastName: lastName,
+          email: userEmail,
+          department: departmentName,
+          team: teamName,
+          role: 'USER' 
+        }
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { empId: realEmpId },
+        data: {
+          firstName: firstName,
+          lastName: lastName,
+          department: departmentName,
+          team: teamName,
+          // หากอยากให้อัปเดตข้อมูล email หรือ login ให้ตรงกับ AD เสมอ สามารถเพิ่มตรงนี้ได้ครับ
         }
       });
     }
 
-    // ส่งข้อมูลกลับไปให้หน้าเว็บเพื่อเข้าสู่ Dashboard
-    return NextResponse.json({ success: true, user });
+    // ==========================================
+    // 🍪 5. บันทึก Cookie และส่ง Response
+    // ==========================================
+    const response = NextResponse.json({ success: true, user });
+    
+    response.cookies.set('user_session', JSON.stringify({
+      id: user.id,
+      empId: user.empId,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      department: user.department,
+      team: user.team,
+        role: user.role,
+      isAdmin: user.isAdmin,
+    }), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 1, 
+    });
+
+    return response;
 
   } catch (error: any) {
     console.error('System Error:', error);

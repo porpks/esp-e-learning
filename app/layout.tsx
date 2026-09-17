@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "../components/ThemeProvider";
-import ThemeToggle from "../components/ThemeToggle"; // <--- 1. Import ปุ่มเข้ามา
+import Navbar from "@/components/Navbar"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Enterprise Learning Hub",
-  description: "ระบบจัดการความรู้ภายในองค์กร",
+  title: "ESP E-Learning",
+  description: "ESP Group Learning Management System",
 };
 
 export default function RootLayout({
@@ -17,13 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider>
+    <html lang="en">
+      <body className={`${inter.className} overflow-y-scroll min-h-screen bg-slate-50 flex flex-col`}>
+        <Navbar />
+        
+        <main className="flex-1 w-full flex flex-col">
           {children}
-          {/* 2. เอาปุ่มลอยมาวางไว้ตรงนี้ จะได้แสดงทุกหน้า */}
-          <ThemeToggle /> 
-        </ThemeProvider>
+        </main>
+
       </body>
     </html>
   );

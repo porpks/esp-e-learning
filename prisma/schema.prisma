@@ -3,62 +3,195 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+   provider  = "postgresql"
+// provider = "mysql"
 }
 
-// --------------------------------------------------
-// 1. ตารางพนักงาน (Users)
-// --------------------------------------------------
+enum Role {
+  USER
+  LEADER
+  MANAGER
+}
+
 model User {
-  id          Int        @id @default(autoincrement())
-  empId       String     @unique // รหัสพนักงาน (ห้ามซ้ำ)
-  name        String
-  department  String?
-  role        String     @default("User") // ระดับสิทธิ์: Admin, Instructor, User
+  id              Int            @id @default(autoincrement())
+  empId           String         @unique
+  username        String         @unique
+  firstName       String
+  lastName        String
+  email           String         @unique
+  department      String?
+  team            String?
+  japaneseLevel   String?
+  profileImage    String?
   
-  // ความสัมพันธ์ (1 คน สร้างได้หลายคอร์ส / อัปโหลดได้หลายไฟล์)
-  courses     Course[]   
-  documents   Document[] 
+  role            Role           @default(USER)
+  isAdmin         Boolean        @default(false)
+
+  managerId       Int?
+  manager         User?          @relation("UserManager", fields: [managerId], references: [id])
+  subordinates    User[]         @relation("UserManager")
+
+  enrollments     Enrollment[]
+  certificates    Certificate[]
+  notifications   Notification[]
+  skills          Skill[]
   
-  createdAt   DateTime   @default(now())
+  createdCourses  Course[]       @relation("CourseCreator")
+  announcements   Announcement[] @relation("AnnouncementCreator")
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
-// --------------------------------------------------
-// 2. ตารางคอร์สเรียน (Courses)
-// --------------------------------------------------
-model Course {
-  id          Int        @id @default(autoincrement())
+model Skill {
+  id          Int      @id @default(autoincrement())
+  name        String   // เช่น CATIA V5, Autocad
+  level       String?  // เช่น Beginner, Associate
+  iconUrl     String?
+  
+  users       User[]   // Many-to-many กับ User
+  
+  createdAt   DateTime @default(now())
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
   title       String
-  description String?    @db.Text
-  category    String
-  progress    Int        @default(0)
-  
-  // ผู้สร้างคอร์ส (เชื่อมกับตาราง User)
+  content     String   @db.Text
+  targetDept  String?
   creatorId   Int
-  creator     User       @relation(fields: [creatorId], references: [id])
-  
-  // เอกสาร/วิดีโอ ที่อยู่ในคอร์สนี้
-  documents   Document[] 
-  
-  createdAt   DateTime   @default(now())
+  creator     User     @relation("AnnouncementCreator", fields: [creatorId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
 }
 
-// --------------------------------------------------
-// 3. ตารางไฟล์และเอกสาร (Documents / KMS)
-// --------------------------------------------------
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  isRead      Boolean  @default(false)
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+}
+
+enum CourseType {
+  GENERAL
+  LANGUAGE
+}
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?      @db.Text
+  thumbnail   String?
+  type        CourseType   @default(GENERAL)
+  category    String?
+  
+  creatorId   Int
+  creator     User         @relation("CourseCreator", fields: [creatorId], references: [id])
+  
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Lesson {
+  id          Int          @id @default(autoincrement())
+  courseId    Int
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  
+  subLessons  SubLesson[]
+}
+
+model SubLesson {
+  id          Int          @id @default(autoincrement())
+  lessonId    Int
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  
+  videoUrl    String?
+  durationSec Int          @default(0) // ความยาววิดีโอทั้งหมด (วินาที)
+  
+  documents   Document[]
+  progresses  SubLessonProgress[]
+}
+
 model Document {
   id          Int        @id @default(autoincrement())
+  subLessonId Int
+  subLesson   SubLesson  @relation(fields: [subLessonId], references: [id], onDelete: Cascade)
   title       String
-  fileType    String     // เช่น PDF, MP4, DOCX
-  filePath    String     // **สำคัญ:** เก็บแค่ "ที่อยู่ไฟล์" ไม่ใช่ตัวไฟล์
+  fileUrl     String
+  fileType    String
+}
+
+enum EnrollmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Enrollment {
+  id              Int              @id @default(autoincrement())
+  userId          Int
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId        Int
+  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   
-  // ใครเป็นคนอัปโหลด?
-  uploaderId  Int
-  uploader    User       @relation(fields: [uploaderId], references: [id])
+  status          EnrollmentStatus @default(ASSIGNED)
+  progressPercent Int              @default(0) // คำนวณจาก SubLessonProgress
+  deadline        DateTime?
   
-  // ไฟล์นี้ผูกกับคอร์สไหน? (ถ้าเป็นเอกสาร KMS ทั่วไปจะไม่ผูกกับคอร์ส = null ได้)
+  assignedById    Int?
+  
+  assignedAt      DateTime         @default(now())
+  completedAt     DateTime?
+  
+  @@unique([userId, courseId])
+}
+
+model SubLessonProgress {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  subLessonId Int
+  subLesson   SubLesson @relation(fields: [subLessonId], references: [id], onDelete: Cascade)
+  
+  watchedSec  Int       @default(0) // เก็บว่าผู้ใช้ดูถึงวินาทีที่เท่าไหร่แล้ว
+  isCompleted Boolean   @default(false)
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, subLessonId])
+}
+
+model Certificate {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?   @db.Text
+  imageUrl    String?
+  
   courseId    Int?
-  course      Course?    @relation(fields: [courseId], references: [id])
+  isExternal  Boolean   @default(false)
   
-  createdAt   DateTime   @default(now())
+  issueDate   DateTime  @default(now())
+}
+
+model KnowledgeArticle {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String   
+  content     String   @db.Text
+  fileUrl     String?  
+  
+  createdAt   DateTime @default(now())
 }
