@@ -58,12 +58,14 @@ model Skill {
 model Announcement {
   id          Int      @id @default(autoincrement())
   title       String
-  content     String   @db.Text
-  targetDept  String?
+  description String?
+  category    String?
+  imageUrl    String?
+  linkUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   creatorId   Int
   creator     User     @relation("AnnouncementCreator", fields: [creatorId], references: [id])
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
 }
 
 model Notification {

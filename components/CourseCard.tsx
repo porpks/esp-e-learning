@@ -29,7 +29,7 @@ export default function CourseCard({
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col justify-between transition-all hover:shadow-md">
       <div>
         {/* ปกคอร์สส่วนบน */}
-        <div className={`h-28 ${headerBgColor} p-3 relative flex justify-end`}>
+        <div className={`h-36 ${headerBgColor} p-3 relative flex justify-end`}>
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
             {category}
           </span>

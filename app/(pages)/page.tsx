@@ -47,7 +47,7 @@ export default function DashboardPage() {
         <HeroCarousel />
         {/* <AnnouncementBanner message='แจ้งเตือน: คอร์สบังคับ "PDPA ฉบับอัปเดต 2026" จะครบกำหนดในอีก 3 วัน!' buttonText="เรียนทันที"/> */}
 
-        {/* <section className="space-y-3">
+        <section className="space-y-3">
           <div>
             <h3 className="text-lg font-bold text-slate-800">Mandatory</h3>
             <p className="text-xs text-slate-500">คอร์สบังคับ จาก HR, Confidential, IT</p>
@@ -58,9 +58,9 @@ export default function DashboardPage() {
               <CourseCard key={course.id} {...course} />
             ))}
           </div>
-        </section> */}
+        </section>
 
-        {/* <section className="space-y-3">
+        <section className="space-y-3">
           <div>
             <h3 className="text-lg font-bold text-slate-800">Continue Learning</h3>
             <p className="text-xs text-slate-500">คอร์สดำเนินการเรียนต่อ</p>
@@ -71,9 +71,9 @@ export default function DashboardPage() {
               <div key={item} className="h-40 bg-slate-200 rounded-2xl animate-pulse"></div>
             ))}
           </div>
-        </section> */}
+        </section>
 
-        {/* <section className="space-y-3">
+        <section className="space-y-3">
           <div>
             <h3 className="text-lg font-bold text-slate-800">Recommended</h3>
             <p className="text-xs text-slate-500">คอร์สอื่นๆ ที่น่าสนใจ</p>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
               <div key={item} className="h-40 bg-slate-200 rounded-2xl animate-pulse"></div>
             ))}
           </div>
-        </section> */}
+        </section>
       </main>
     </div>
   );
