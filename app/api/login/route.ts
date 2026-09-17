@@ -84,15 +84,15 @@ export async function POST(request: Request) {
         response.cookies.set('user_session', JSON.stringify({
             id: testUser.id,
             empId: testUser.empId,
-            username: testUser.username,         // ใช้ login แทน username
-            firstName: testUser.firstName, // เพิ่ม firstName
-            lastName: testUser.lastName,   // เพิ่ม lastName
-            email: testUser.email,         // เพิ่ม email
+            username: testUser.username,
+            firstName: testUser.firstName,
+            lastName: testUser.lastName,
+            email: testUser.email,
             department: testUser.department,
             team: testUser.team,
             role: testUser.role,
             isAdmin: testUser.isAdmin,
-            profileImage: testUser.profileImage || null, // เพิ่ม profileImage
+            profileImage: testUser.profileImage || null,
         }), {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
     const firstName = nameParts[0];
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
     
-    const userEmail = adUser.mail || `${username}@esp-group.asia`;
+    const userEmail = adUser.mail || `${username.toLowerCase()}@esp-group.asia`;
 
     // ==========================================
     // 💾 4. Auto-provisioning & อัปเดตข้อมูลใน MariaDB (LMS)

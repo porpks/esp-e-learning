@@ -4,56 +4,28 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-
-interface UserSession {
-  id: number;
-  empId: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  isAdmin: boolean;
-  department?: string;
-  team?: string;
-  profileImage?: string;
-}
+import { useUser } from '@/lib/useUser'; // 🌟 Import Custom Hook
 
 export default function Navbar() {
-
   const roleBase = "Learner";
 
   const pathname = usePathname();
   const router = useRouter();
     
-  const [user, setUser] = useState<UserSession | null>(null);
+  // 🌟 เรียกใช้ User จาก Hook กลาง
+  const { user, setUser } = useUser();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isRolesOpen, setIsRolesOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState<string>(roleBase);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch('/api/me');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            setUser(data.user);
-            const displayRole = data.user.isAdmin ? 'Administrator' : 
-              data.user.role === 'MANAGER' ? 'Manager' : 
-              data.user.role === 'LEADER' ? 'Leader' : roleBase;
-            setCurrentRole(displayRole);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch user session:', error);
-      }
-    };
-
-    if (!user && pathname !== '/login') {
-      fetchUser();
+    if (user) {
+      const displayRole = user.isAdmin ? 'Administrator' : 
+        user.role === 'MANAGER' ? 'Manager' : 
+        user.role === 'LEADER' ? 'Leader' : roleBase;
+      setCurrentRole(displayRole);
     }
-  }, [pathname, user]);
+  }, [user]);
 
   const navItems = [
     { name: 'Main', path: '/' },
@@ -66,7 +38,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', { method: 'POST' });
-      setUser(null);
+      setUser(null); // ล้างข้อมูล User ใน State กลาง
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -95,7 +67,7 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* 2. Main Navigation Links (🌟 ปรับปรุง Animation เส้นใต้ลื่นไหล 🌟) */}
+          {/* 2. Main Navigation Links */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8 font-bold text-sm tracking-wide h-full">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
@@ -107,7 +79,6 @@ export default function Navbar() {
                     isActive ? 'text-white' : 'text-slate-300 hover:text-white'
                   }`}
                 >
-                  {/* กล่องข้อความ */}
                   <span className="text-center leading-tight">
                     {item.name.includes(' ') ? (
                       <>
@@ -120,7 +91,6 @@ export default function Navbar() {
                     )}
                   </span>
                   
-                  {/* เส้นใต้อนิเมชั่น (Animated Underline) */}
                   <span 
                     className={`absolute bottom-0 left-0 w-full h-[3px] rounded-t-md transition-transform duration-300 ease-out origin-center ${
                       isActive 
@@ -136,7 +106,6 @@ export default function Navbar() {
           {/* 3. Right Side: Notification & User Profile */}
           <div className="flex items-center gap-4">
             
-            {/* Notification Bell */}
             <button className="relative p-2 text-slate-300 hover:text-white transition-colors group">
               <svg className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -144,7 +113,7 @@ export default function Navbar() {
               <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-[#0B2545]"></span>
             </button>
 
-            {/* User Info Label (Dynamic) */}
+            {/* User Info Label */}
             <div className="hidden sm:block text-right leading-tight">
               <div className="font-bold text-sm text-white">
                 {user ? `${user.username}` : 'Loading...'}
@@ -163,13 +132,14 @@ export default function Navbar() {
                 }}
                 className="w-11 h-11 rounded-full bg-slate-500 border-2 border-white shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none flex items-center justify-center font-bold text-white shadow-inner overflow-hidden"
               >
-                {user?.profileImage ?
-                (<img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />) : 
-                (<span>{user?.username ? user.username.charAt(0).toUpperCase() : ''}</span>)
-                }
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{user?.username ? user.username.charAt(0).toUpperCase() : ''}</span>
+                )}
               </button>
 
-              {/* === Main Profile Dropdown === */}
+              {/* Profile Dropdown */}
               {isProfileOpen && (
                 <div 
                   className="absolute right-0 mt-3 w-52 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
@@ -193,34 +163,33 @@ export default function Navbar() {
                     </button>
 
                     {isRolesOpen && (
-                        <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-100 rounded-xl shadow-xl py-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                      <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-100 rounded-xl shadow-xl py-2 animate-in fade-in slide-in-from-left-2 duration-200">
                         {([
-                            ...(user?.isAdmin ? ['Administrator'] : []),
-                            ...(user?.role === 'MANAGER' ? ['Manager', roleBase] : []),
-                            ...(user?.role === 'LEADER' ? ['Leader', roleBase] : []),
-                            ...(user?.role === 'USER' ? [roleBase] : []),
+                          ...(user?.isAdmin ? ['Administrator'] : []),
+                          ...(user?.role === 'MANAGER' ? ['Manager', roleBase] : []),
+                          ...(user?.role === 'LEADER' ? ['Leader', roleBase] : []),
+                          ...(user?.role === 'USER' ? [roleBase] : []),
                         ]).map((role) => (
-                            <button
+                          <button
                             key={role}
                             onClick={() => {
-                                setCurrentRole(role);
-                                setIsRolesOpen(false);
-                                setIsProfileOpen(false);
+                              setCurrentRole(role);
+                              setIsRolesOpen(false);
+                              setIsProfileOpen(false);
                             }}
                             className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors ${
-                                currentRole === role
+                              currentRole === role
                                 ? 'bg-blue-50 text-[#0092DF] font-bold'
                                 : 'text-slate-700 hover:bg-slate-50'
                             }`}
-                            >
+                          >
                             {role}
-                            </button>
+                          </button>
                         ))}
-                        </div>
+                      </div>
                     )}
                   </div>
 
-                  {/* Profile Link */}
                   <Link
                     href="/profile"
                     className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 font-medium transition-colors"
@@ -230,7 +199,6 @@ export default function Navbar() {
 
                   <div className="border-t border-slate-100 my-1"></div>
 
-                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 font-semibold transition-colors"

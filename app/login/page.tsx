@@ -2,11 +2,13 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useUser } from '@/lib/useUser';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/'; // ถ้าไม่มีให้ไปหน้า / (Dashboard)
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const { setUser } = useUser();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,6 +31,7 @@ function LoginForm() {
 
       if (res.ok) {
         // ล็อกอินผ่าน -> นำผู้ใช้ไปยัง Callback URL ที่ตั้งไว้
+        setUser(data.user);
         router.push(callbackUrl);
         router.refresh();
       } else {
