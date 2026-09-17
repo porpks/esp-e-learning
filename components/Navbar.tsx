@@ -86,7 +86,7 @@ export default function Navbar() {
           <Link href="/" className="shrink-0 px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm hover:opacity-95 transition-opacity h-12 min-w-[80px]">
             <div className="relative" style={{ width: '90px', height: '60px' }}>
               <Image 
-                src="/ESP_Logo.png" 
+                src="https://zbnmgcfgnxgxvwxgiyci.supabase.co/storage/v1/object/public/ESP_E-learning_resource/icons/ESP%20Logo.png" 
                 alt="ESP Logo" 
                 fill
                 className="object-contain"
