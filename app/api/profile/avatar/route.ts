@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 // ตั้งค่า Supabase Client สำหรับฝั่ง Backend
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 
 const BUCKET_NAME = 'ESP_E-learning_resource';
@@ -15,11 +15,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const userId = formData.get('userId') as string;
+    const userIdStr = formData.get('userId') as string;
 
-    if (!file || !userId) {
+    if (!file || !userIdStr) {
       return NextResponse.json({ error: 'กรุณาระบุไฟล์และ User ID' }, { status: 400 });
     }
+
+    // แปลง userId เป็นตัวเลข
+    const userId = parseInt(userIdStr, 10);
 
     // 1. ดึงข้อมูล User เพื่อดูว่ามีรูปเดิมอยู่ไหม
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -70,11 +73,14 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userIdStr = searchParams.get('userId');
 
-    if (!userId) {
+    if (!userIdStr) {
       return NextResponse.json({ error: 'กรุณาระบุ User ID' }, { status: 400 });
     }
+
+    // แปลง userId เป็นตัวเลข
+    const userId = parseInt(userIdStr, 10);
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 

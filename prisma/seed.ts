@@ -143,13 +143,13 @@ async function main() {
   // 2. สร้าง Announcement & Courses
   // ==========================================
   
-  await prisma.announcement.create({
-    data: {
-      title: 'แจ้งเตือนด่วน',
-      content: 'แจ้งเตือน: คอร์สบังคับ "PDPA ฉบับอัปเดต 2026" จะครบกำหนดในอีก 3 วัน!',
-      creatorId: admin.id,
-    }
-  });
+//   await prisma.announcement.create({
+//     data: {
+//       title: 'แจ้งเตือนด่วน',
+//       description: 'แจ้งเตือน: คอร์สบังคับ "PDPA ฉบับอัปเดต 2026" จะครบกำหนดในอีก 3 วัน!',
+//       creatorId: admin.id,
+//     }
+//   });
 
   const course1 = await prisma.course.create({
     data: {
