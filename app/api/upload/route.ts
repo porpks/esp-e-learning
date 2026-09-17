@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
@@ -13,44 +14,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ไม่พบไฟล์ที่อัปโหลด' }, { status: 400 });
     }
 
-    // 1. สร้างชื่อไฟล์ให้ไม่ซ้ำกัน (ลบช่องว่างทิ้งเพื่อป้องกัน URL มีปัญหา)
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
     const uniqueName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     
-    // 2. เรียกใช้งาน Supabase Client
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+    await mkdir(uploadDir, { recursive: true });
 
-    // 3. อัปโหลดไฟล์ขึ้น Supabase Storage (ระบุชื่อ Bucket ที่สร้างไว้ เช่น 'learning-materials')
-    const { data: uploadData, error: uploadError } = await supabase
-      .storage
-      .from('learning-materials')
-      .upload(`uploads/${uniqueName}`, file, {
-        contentType: file.type,
-        upsert: false, // ป้องกันการเซฟทับไฟล์ชื่อเดิม
-      });
+    const filePath = path.join(uploadDir, uniqueName);
+    await writeFile(filePath, buffer);
 
-    if (uploadError) {
-      console.error('Supabase Upload Error:', uploadError);
-      return NextResponse.json(
-        { error: 'เกิดข้อผิดพลาดในการบันทึกไฟล์บนคลาวด์' }, 
-        { status: 500 }
-      );
-    }
-
-    // 4. ขอ URL แบบ Public จาก Supabase เพื่อเอาไปเก็บลง Database
-    const { data: { publicUrl } } = supabase
-      .storage
-      .from('learning-materials')
-      .getPublicUrl(`uploads/${uniqueName}`);
-
-    // 5. บันทึกข้อมูลลง Database ผ่าน Prisma เหมือนเดิม
     const document = await prisma.document.create({
       data: {
         title: title || file.name,
         fileType: file.type,
-        // เปลี่ยนจาก path ในเครื่อง เป็น Public URL ของ Supabase แทน
-        filePath: publicUrl, 
-        uploaderId: 1, // TODO: อนาคตควรเปลี่ยนให้ดึงจาก Session ของ User ที่กำลัง Login อยู่
+        fileUrl: `/uploads/${uniqueName}`,
+        subLessonId: 1, 
       }
     });
 
