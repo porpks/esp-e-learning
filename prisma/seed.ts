@@ -138,18 +138,100 @@ async function main() {
       japaneseLevel: 'N3'
     },
   });
+
+  const userPCK = await prisma.user.upsert({
+    where: { empId: '5112' }, update: {},
+    create: { 
+      empId: '5112', 
+      username: 'Pacharaphol_k',
+      firstName: 'Pacharaphol', 
+      lastName: 'Kongnil',
+      email: 'pacharaphol_k@esp-group.asia',
+      role: 'LEADER', 
+      department: 'System', 
+      team: 'Software', 
+      managerId: leadSYS.id,
+    },
+  });
+  const userPKS = await prisma.user.upsert({
+    where: { empId: '5328' }, update: {},
+    create: { 
+      empId: '5328', 
+      username: 'Pakapong_s',
+      firstName: 'Pakapong', 
+      lastName: 'Sathianchok',
+      email: 'pakapong_s@esp-group.asia',
+      role: 'USER', 
+      department: 'System', 
+      team: 'Software', 
+      managerId: userPCK.id,
+    },
+  });
+  const userTWD = await prisma.user.upsert({
+    where: { empId: '5332' }, update: {},
+    create: { 
+      empId: '5332', 
+      username: 'Thanawadee_t',
+      firstName: 'Thanawadee', 
+      lastName: 'Thongpak',
+      email: 'thanawadee_t@esp-group.asia',
+      role: 'USER', 
+      department: 'System', 
+      team: 'System', 
+      managerId: userPCK.id,
+    },
+  });
+
   
   // ==========================================
   // 2. สร้าง Announcement & Courses
   // ==========================================
   
-//   await prisma.announcement.create({
-//     data: {
-//       title: 'แจ้งเตือนด่วน',
-//       description: 'แจ้งเตือน: คอร์สบังคับ "PDPA ฉบับอัปเดต 2026" จะครบกำหนดในอีก 3 วัน!',
-//       creatorId: admin.id,
-//     }
-//   });
+  await prisma.announcement.createMany({
+    data: [
+      {
+        title: "ยินดีต้อนรับสู่ ESP Enterprise Knowledge Hub!",
+        description: "ศูนย์กลางการเรียนรู้และคลังเอกสารความรู้ภายในองค์กร เข้าถึงบทเรียน คอร์สฝึกอบรม และข่าวสารสำคัญได้ในที่เดียวอย่างปลอดภัย",
+        category: "ANNOUNCEMENT",
+        imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
+        linkUrl: "/knowledge-base",
+        creatorId: admin.id
+      },
+      {
+        title: "เปิดตัวคอร์สเรียนใหม่: CAD & NX Design Standards",
+        description: "ยกระดับทักษะการออกแบบทางวิศวกรรมด้วยบทเรียนมาตรฐานใหม่ล่าสุดจากทีม Eng. Knowledge พร้อมแบบทดสอบวัดผล",
+        category: "NEW COURSE",
+        imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200",
+        linkUrl: "/courses",
+        creatorId: admin.id
+      },
+      {
+        title: "โครงการติวสอบวัดระดับภาษาญี่ปุ่น (JLPT Prep Course)",
+        description: "เปิดรับสมัครพนักงานที่สนใจอัปเกรดทักษะภาษาญี่ปุ่น ระดับ N5 - N2 เข้าเรียนฟรี พร้อมรับสิทธิ์รับทุนสนับสนุนค่าสอบ",
+        category: "JAPANESE HUB",
+        imageUrl: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=1200",
+        linkUrl: "/japanese",
+        creatorId: admin.id
+      },
+      {
+        title: "แจ้งปิดปรับปรุงระบบ IT Infrastructure ชั่วคราว",
+        description: "ระบบจะทำการอัปเดตประสิทธิภาพและเพิ่มความปลอดภัยในวันเสาร์นี้ เวลา 22:00 - 00:00 น. ขออภัยในความไม่สะดวก",
+        category: "MAINTENANCE",
+        imageUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200",
+        linkUrl: "/faqs",
+        creatorId: admin.id
+      },
+      {
+        title: "รับชมวิดีโอย้อนหลังกิจกรรม Townhall & Q/A Session",
+        description: "สามารถดาวน์โหลดเอกสารประกอบการประชุม และรับชมสไลด์การนำเสนอวิสัยทัศน์ประจำไตรมาสได้แล้ววันนี้",
+        category: "EVENT",
+        imageUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200",
+        linkUrl: "/faqs",
+        creatorId: admin.id
+    }
+    ]
+  });
+
 
   const course1 = await prisma.course.create({
     data: {
@@ -204,6 +286,41 @@ async function main() {
       progressPercent: 45,
       deadline: new Date(new Date().setDate(new Date().getDate() + 3)),
       assignedById: leadCAD.id
+    }
+  });
+
+  const fullCourse = await prisma.course.create({
+    data: {
+      title: 'การใช้งานโปรแกรม CAD เบื้องต้น',
+      description: 'เรียนรู้พื้นฐานการใช้งานซอฟต์แวร์ออกแบบ 3 มิติ สำหรับพนักงานใหม่ ตั้งแต่หน้าแรกจนถึงการ Export งาน',
+      type: 'GENERAL',
+      category: 'Work',
+      creatorId: admin.id,
+      thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&q=80',
+      lessons: {
+        create: [
+          {
+            title: 'บทที่ 1: แนะนำหน้าต่างการทำงาน (UI)',
+            order: 1,
+            subLessons: {
+              create: [
+                { 
+                  title: 'ส่วนประกอบของโปรแกรม', 
+                  order: 1, 
+                  durationSec: 3600, // 1 ชม.
+                  videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
+                },
+                { 
+                  title: 'การตั้งค่า Shortcut เบื้องต้น', 
+                  order: 2, 
+                  durationSec: 1800, // 30 นาที
+                  videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
+                }
+              ]
+            }
+          }
+        ]
+      }
     }
   });
 

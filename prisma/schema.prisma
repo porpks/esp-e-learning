@@ -86,6 +86,7 @@ enum CourseType {
 
 model Course {
   id          Int          @id @default(autoincrement())
+  path        String       @unique @default(cuid())
   title       String
   description String?      @db.Text
   thumbnail   String?

@@ -45,7 +45,6 @@ export default function DashboardPage() {
 
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-8">
         <HeroCarousel />
-        {/* <AnnouncementBanner message='แจ้งเตือน: คอร์สบังคับ "PDPA ฉบับอัปเดต 2026" จะครบกำหนดในอีก 3 วัน!' buttonText="เรียนทันที"/> */}
 
         <section className="space-y-3">
           <div>
