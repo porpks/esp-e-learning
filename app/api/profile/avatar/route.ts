@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { prisma } from '@/lib/prisma';
+import { cookies } from 'next/headers';
 
 // ตั้งค่า Supabase Client สำหรับฝั่ง Backend
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  process.env.SUPABASE_SECRET_KEY!
 );
 
 const BUCKET_NAME = 'ESP_E-learning_resource';
@@ -15,7 +16,13 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const userIdStr = formData.get('userId') as string;
+    const cookieStore = cookies();
+    const sessionCookie = (await cookieStore).get('user_session');
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'ไม่พบเซสชัน กรุณาเข้าสู่ระบบใหม่' }, { status: 401 });
+    }
+    const sessionData = JSON.parse(sessionCookie.value);
+    const userIdStr = sessionData.id;
 
     if (!file || !userIdStr) {
       return NextResponse.json({ error: 'กรุณาระบุไฟล์และ User ID' }, { status: 400 });
@@ -73,7 +80,13 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userIdStr = searchParams.get('userId');
+    const cookieStore = cookies();
+    const sessionCookie = (await cookieStore).get('user_session');
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'ไม่พบเซสชัน กรุณาเข้าสู่ระบบใหม่' }, { status: 401 });
+    }
+    const sessionData = JSON.parse(sessionCookie.value);
+    const userIdStr = sessionData.id;
 
     if (!userIdStr) {
       return NextResponse.json({ error: 'กรุณาระบุ User ID' }, { status: 400 });

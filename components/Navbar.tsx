@@ -168,14 +168,15 @@ export default function Navbar() {
                 <div
                   className="absolute right-0 mt-3 w-52 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                 >
-                  <div className="px-4 py-2 border-b border-slate-100 font-bold text-sm text-slate-900 line-clamp-1">
+                  {/* <div className="px-4 py-2 border-b border-slate-100 font-bold text-sm text-slate-900 line-clamp-1">
                     {user ? `${user.firstName} ${user.lastName}` : 'Unknown User'}
-                  </div>
+                  </div> */}
 
                   {/* Sub-menu: Roles */}
                   <div className="relative">
                     <button
                       onMouseEnter={() => setIsRolesOpen(!isRolesOpen)}
+                      onMouseLeave={() => setIsRolesOpen(!isRolesOpen)}
                       className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center justify-between font-medium transition-colors"
                     >
                       <span>Roles</span>
@@ -190,7 +191,7 @@ export default function Navbar() {
                                 setIsRolesOpen(false);
                                 setIsProfileOpen(false);
                               }}>
-                            <div className='w-full text-left px-4 py-1.5 text-sm font-medium transition-colors border-b border-gray-200'>Administrator</div>            
+                            <div className='w-full text-left px-4 py-1.5 text-sm font-medium transition-colors border-b border-slate-200'>Administrator</div>            
                             </Link>) : '')}
                         {([
                           ...(user?.role === 'MANAGER' ? ['Manager', roleBase] : []),

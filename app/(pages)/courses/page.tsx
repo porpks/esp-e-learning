@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
 
 export default function CoursesPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'path'>('all');
@@ -42,13 +41,16 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-16">
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
-        {/* Search Bar */}
-        <div className="max-w-3xl mx-auto">
-          <input
-            type="text"
-            placeholder="What you want to study today?"
-            className="w-full px-6 py-3.5 rounded-full bg-cyan-50/80 border border-cyan-200 text-slate-800 text-sm outline-none shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-400"
-          />
+        {/* Title & Search */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-black tracking-wider text-[#0B2545]">ESP COURSES</h1>
+          <div className="max-w-2xl mx-auto">
+            <input
+              type="text"
+              placeholder="What you want to study today?"
+              className="w-full px-6 py-3 rounded-full bg-cyan-50/80 border border-cyan-200 text-slate-800 text-sm outline-none shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
         </div>
 
         {/* Tab Switcher */}
