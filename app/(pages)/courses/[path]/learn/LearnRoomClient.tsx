@@ -50,7 +50,7 @@ export default function LearnRoomClient({ courseTitle, coursePath, lessons }: { 
   if (!currentSubLesson) return <div className="p-10">ยังไม่มีเนื้อหาบทเรียน</div>;
 
   return (
-    <div className="flex h-screen bg-white font-sans text-slate-800 overflow-hidden">
+    <div className="flex h-[calc(100vh-80px)] bg-white font-sans text-slate-800 overflow-hidden">
       
       {/* ================= LEFT SIDEBAR (คงเดิมตามโค้ดก่อนหน้า) ================= */}
       <div className="w-[350px] bg-[#eef8ff] flex flex-col border-r border-blue-100 shrink-0">
@@ -116,8 +116,8 @@ export default function LearnRoomClient({ courseTitle, coursePath, lessons }: { 
           ))}
         </div>
 
-        <div className="p-4 bg-white border-t border-blue-100">
-          <Link href={`/courses/${coursePath}`} className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-sm transition-colors">
+        <div className="h-20 pl-4 bg-white border-t border-blue-100 flex align-center">
+          <Link href={`/courses/${coursePath}`} className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-sm transition-colors cursor-pointer">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
             ออกจากห้องเรียน
           </Link>
@@ -162,7 +162,7 @@ export default function LearnRoomClient({ courseTitle, coursePath, lessons }: { 
           <button 
             onClick={() => goToLesson(currentIdx - 1)}
             disabled={currentIdx === 0}
-            className="px-6 py-2.5 text-slate-600 font-bold border border-slate-200 rounded-lg disabled:opacity-30 hover:bg-slate-50 transition-colors"
+            className={`px-6 py-2.5 text-slate-600 font-bold border border-slate-200 rounded-lg disabled:opacity-30 hover:bg-slate-50 transition-colors ${currentIdx === 0 ? '': 'cursor-pointer'}`}
           >
             ← Previous
           </button>
@@ -178,7 +178,7 @@ export default function LearnRoomClient({ courseTitle, coursePath, lessons }: { 
                 alert('🎉 ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว');
               }
             }}
-            className="px-8 py-2.5 bg-[#0B2545] text-white font-bold rounded-lg hover:bg-[#134074] transition-colors"
+            className={`px-8 py-2.5 bg-[#0B2545] text-white font-bold rounded-lg hover:bg-[#134074] transition-colors ${currentIdx === allSubLessons.length - 1 ? '' : 'cursor-pointer'}`}
           >
             {currentIdx === allSubLessons.length - 1 ? 'Finish Course ✔️' : 'Next Lesson →'}
           </button>
