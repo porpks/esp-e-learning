@@ -2,49 +2,30 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 const ActiveDirectory = require('activedirectory2');
 
-// 🌟 จำลองฟังก์ชันเชื่อมต่อ Database ที่ 2 (dataUserEmp)
 async function fetchEmpIdFromExternalDB(adUsername: string) {
-  console.log(`Searching real empId for AD User: ${adUsername}`);
-  
-  const dataUserEmpTable = [
-    { 
-        id: 1, 
-        empId: '5328', 
-        username: 'Pakapong_s', 
-        fullName: 'Pakapong Sathianchok', 
-        department: 'System',
-        team: 'Software',
-        role: 'USER',
-        isActive: true 
-    },
-    { 
-        id: 2, 
-        empId: '5332', 
-        username: 'Thanawadee_t', 
-        fullName: 'Thanawadee Thongpak', 
-        department: 'System',
-        team: 'System',
-        role: 'USER',
-        isActive: true 
-    },
-  ];
+  try {
+    const foundUserRow = await prisma.user.findFirst({
+      where: { username: adUsername }
+    });
 
-  const foundUserRow = dataUserEmpTable.find(
-    (row) => row.username.toLowerCase() === adUsername.toLowerCase()
-  );
+    if (foundUserRow) {
+      return { 
+        empId: foundUserRow.empId, 
+        firstName: foundUserRow.firstName,
+        lastName: foundUserRow.lastName,
+        department: foundUserRow.department, 
+        team: foundUserRow.team, 
+        role: foundUserRow.role 
+      };
+    }
+    
+    // ถ้าหาไม่เจอ
+    return { empId: null, firstName: null, lastName: null, department: null, team: null, role: null };
 
-  if (foundUserRow && foundUserRow.isActive) {
-    console.log(`Found empId: ${foundUserRow.empId} for user: ${adUsername}`);
-    return { 
-      empId: foundUserRow.empId, 
-      fullName: foundUserRow.fullName, 
-      department: foundUserRow.department, 
-      team: foundUserRow.team, 
-      role: foundUserRow.role 
-    };
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return { empId: null, firstName: null, lastName: null, department: null, team: null, role: null };
   }
-
-  return { empId: null, fullName: null, department: null, team: null, role: null };
 }
 
 export async function POST(request: Request) {
@@ -139,12 +120,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Username หรือ Password ไม่ถูกต้อง' }, { status: 401 });
     }
 
-    // ==========================================
-    // 🔄 3. ค้นหา empId จริงจาก external DB
-    // ==========================================
     const externalData = await fetchEmpIdFromExternalDB(username);
     const realEmpId = externalData.empId;
-    const fullName = externalData.fullName;
     const departmentName = externalData.department;
     const teamName = externalData.team;
 
@@ -154,16 +131,17 @@ export async function POST(request: Request) {
 
     console.log(`adUser found: ${JSON.stringify(adUser)} | realEmpId: ${realEmpId}`);
     
-    const nameDisplay = fullName || adUser.displayName || adUser.cn || username;
-    const nameParts = nameDisplay.split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    let firstName = externalData.firstName;
+    let lastName = externalData.lastName;
+
+    if (!firstName) {
+      const nameDisplay = adUser.displayName || adUser.cn || username;
+      const nameParts = nameDisplay.split(' ');
+      firstName = nameParts[0];
+      lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    }
     
     const userEmail = adUser.mail || `${username.toLowerCase()}@esp-group.asia`;
-
-    // ==========================================
-    // 💾 4. Auto-provisioning & อัปเดตข้อมูลใน MariaDB (LMS)
-    // ==========================================
     let user = await prisma.user.findUnique({
       where: { empId: realEmpId } 
     });
@@ -189,14 +167,10 @@ export async function POST(request: Request) {
           lastName: lastName,
           department: departmentName,
           team: teamName,
-          // หากอยากให้อัปเดตข้อมูล email หรือ login ให้ตรงกับ AD เสมอ สามารถเพิ่มตรงนี้ได้ครับ
         }
       });
     }
 
-    // ==========================================
-    // 🍪 5. บันทึก Cookie และส่ง Response
-    // ==========================================
     const response = NextResponse.json({ success: true, user });
     
     response.cookies.set('user_session', JSON.stringify({
@@ -208,8 +182,9 @@ export async function POST(request: Request) {
       email: user.email,
       department: user.department,
       team: user.team,
-        role: user.role,
+      role: user.role,
       isAdmin: user.isAdmin,
+      profileImage: user.profileImage || null,
     }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
