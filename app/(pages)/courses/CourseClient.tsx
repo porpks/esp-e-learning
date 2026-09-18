@@ -112,8 +112,8 @@ export default function CourseClient({ initialCourses }: { initialCourses: Cours
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {filteredCourses.map((course) => (
-                  <div key={course.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                    <div>
+                  <div key={course.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer">
+                    <Link href={`/courses/${course.path}/`}>
                       {/* ปกคอร์ส */}
                       <div className="h-40 bg-slate-200 relative overflow-hidden">
                         <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
@@ -128,11 +128,11 @@ export default function CourseClient({ initialCourses }: { initialCourses: Cours
                         <p className="text-xs text-slate-500 line-clamp-2">{course.description}</p>
                         <p className="text-[11px] text-slate-400 pt-1">ชั่วโมงเรียน {course.hours}</p>
                       </div>
-                    </div>
+                    </Link>
 
                     <div className="p-4 pt-0">
-                      <Link href={`/courses/${course.path}`}>
-                        <button className="w-full py-2 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-xs rounded-xl shadow transition-colors">
+                      <Link href={`/courses/${course.path}/learn`}>
+                        <button className="w-full py-2 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-xs rounded-xl shadow transition-colors cursor-pointer">
                           เริ่มเรียนเลย
                         </button>
                       </Link>

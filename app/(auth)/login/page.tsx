@@ -75,7 +75,7 @@ function LoginForm() {
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors disabled:opacity-50"
+        className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors disabled:opacity-50 cursor-pointer"
       >
         {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
       </button>

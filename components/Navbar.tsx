@@ -130,11 +130,11 @@ export default function Navbar() {
           {/* 3. Right Side: Notification & User Profile */}
           <div className="flex items-center gap-4">
             
-            <button className="relative p-2 text-slate-300 hover:text-white transition-colors group">
+            <button className="relative p-2 text-slate-300 hover:text-white transition-colors group cursor-pointer">
               <svg className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-[#0B2545]"></span>
+              {/* <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-[#0B2545]"></span> */}
             </button>
 
             {/* User Info Label */}
@@ -157,7 +157,7 @@ export default function Navbar() {
                 className="w-11 h-11 rounded-full bg-slate-500 border-2 border-white shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none flex items-center justify-center font-bold text-white shadow-inner overflow-hidden"
               >
                 {user?.profileImage ? (
-                  <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover cursor-pointer" />
                 ) : (
                   <span>{user?.username ? user.username.charAt(0).toUpperCase() : ''}</span>
                 )}
@@ -233,7 +233,7 @@ export default function Navbar() {
 
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 font-semibold transition-colors"
+                    className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 font-semibold transition-colors cursor-pointer"
                   >
                     Logs out
                   </button>

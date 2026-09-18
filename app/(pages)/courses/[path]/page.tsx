@@ -79,7 +79,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
 
           <div className="flex flex-wrap items-center gap-4">
             <Link href={`/courses/${course.path}/learn`}>
-              <button className="px-8 py-3 bg-[#0B2545] hover:bg-[#134074] text-white font-bold rounded-lg shadow-md transition-colors">
+              <button className="px-8 py-3 bg-[#0B2545] hover:bg-[#134074] text-white font-bold rounded-lg shadow-md transition-colors cursor-pointer">
                 เริ่มเรียนเลย
               </button>
             </Link>

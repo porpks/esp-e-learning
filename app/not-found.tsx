@@ -29,7 +29,7 @@ export default function NotFound() {
         {/* ปุ่มกลับไปหน้าอื่นๆ */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <Link href="/" className="w-full sm:w-auto">
-            <button className="w-full px-6 py-2.5 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-sm rounded-xl shadow-sm transition-colors">
+            <button className="w-full px-6 py-2.5 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-sm rounded-xl shadow-sm transition-colors cursor-pointer">
               กลับสู่หน้าหลัก
             </button>
           </Link>

@@ -118,7 +118,7 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
                   {uploadStatus === 'idle' && (
                     <button
                       onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded-full text-xs shadow transition-colors z-10"
+                      className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded-full text-xs w-6 shadow transition-colors z-10 cursor-pointer"
                       title={previewImage ? "ยกเลิกรูปนี้" : "ลบรูปโปรไฟล์"}
                     >
                       ✕

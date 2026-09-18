@@ -56,7 +56,7 @@ export default function CourseCard({
 
         <button
           onClick={onAction}
-          className="w-full py-1.5 bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs rounded-lg transition-colors shadow-sm"
+          className="w-full py-1.5 bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs rounded-lg transition-colors shadow-sm cursor-pointer"
         >
           {actionText}
         </button>
