@@ -175,8 +175,8 @@ export default function Navbar() {
                   {/* Sub-menu: Roles */}
                   <div className="relative">
                     <button
-                      onMouseEnter={() => setIsRolesOpen(!isRolesOpen)}
-                      onMouseLeave={() => setIsRolesOpen(!isRolesOpen)}
+                      onMouseEnter={() => setIsRolesOpen(true)}
+                      onMouseLeave={() => setIsRolesOpen(false)}
                       className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center justify-between font-medium transition-colors"
                     >
                       <span>Roles</span>
@@ -184,7 +184,10 @@ export default function Navbar() {
                     </button>
 
                     {isRolesOpen && (
-                      <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-100 rounded-xl shadow-xl py-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                      <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-100 rounded-xl shadow-xl py-2 animate-in fade-in slide-in-from-left-2 duration-200"
+                        onMouseEnter={() => setIsRolesOpen(true)}
+                        onMouseLeave={() => setIsRolesOpen(false)}
+                      >
                         {(user?.isAdmin ? (
                             <Link href={'/admin'}
                               onClick={() => {
