@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+// 🌟 1. Import useRef เพิ่มเข้ามา
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useUser } from '@/lib/useUser'; // 🌟 Import Custom Hook
+import { useUser } from '@/lib/useUser'; 
 
 export default function Navbar() {
   const roleBase = "Learner";
@@ -12,20 +13,42 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
     
-  // 🌟 เรียกใช้ User จาก Hook กลาง
   const { user, setUser } = useUser();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isRolesOpen, setIsRolesOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState<string>(roleBase);
 
+  // 🌟 2. สร้าง Ref สำหรับตรวจสอบกรอบของ Dropdown
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (user) {
-      const displayRole = user.isAdmin ? 'Administrator' : 
-        user.role === 'MANAGER' ? 'Manager' : 
+      const displayRole = user.role === 'MANAGER' ? 'Manager' : 
         user.role === 'LEADER' ? 'Leader' : roleBase;
       setCurrentRole(displayRole);
     }
   }, [user]);
+
+  // 🌟 3. เพิ่ม useEffect ดักจับการคลิกเมาส์นอกกรอบ Dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // ถ้า Ref มีอยู่ และ จุดที่คลิก (event.target) ไม่ได้อยู่ข้างใน Ref
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+        setIsRolesOpen(false);
+      }
+    }
+
+    // เปิดการดักจับคลิกเฉพาะตอนที่ Dropdown เปิดอยู่ เพื่อลดภาระการทำงาน
+    if (isProfileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    // คืนค่าและล้าง Event ออกเมื่อ Component ปิดการทำงาน
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileOpen]); // ทำงานใหม่ทุกครั้งที่ isProfileOpen เปลี่ยนค่า
 
   const navItems = [
     { name: 'Main', path: '/' },
@@ -38,14 +61,15 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', { method: 'POST' });
-      setUser(null); // ล้างข้อมูล User ใน State กลาง
+      setUser(null); 
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
-    
-  if (pathname === '/login') {
+  
+  const pathAvoid = ['/login', '/admin'];
+  if (pathAvoid.some(path => pathname.includes(path))) {
     return null;
   }
 
@@ -123,8 +147,8 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Avatar Circle & Dropdown */}
-            <div className="relative">
+            {/* 🌟 4. ผูก ref={dropdownRef} เข้ากับ div ที่ครอบ Avatar และ Dropdown ทั้งหมด */}
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => {
                   setIsProfileOpen(!isProfileOpen);
@@ -141,12 +165,8 @@ export default function Navbar() {
 
               {/* Profile Dropdown */}
               {isProfileOpen && (
-                <div 
+                <div
                   className="absolute right-0 mt-3 w-52 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
-                  onMouseLeave={() => {
-                    setIsProfileOpen(false);
-                    setIsRolesOpen(false);
-                  }}
                 >
                   <div className="px-4 py-2 border-b border-slate-100 font-bold text-sm text-slate-900 line-clamp-1">
                     {user ? `${user.firstName} ${user.lastName}` : 'Unknown User'}
@@ -155,17 +175,24 @@ export default function Navbar() {
                   {/* Sub-menu: Roles */}
                   <div className="relative">
                     <button
-                      onClick={() => setIsRolesOpen(!isRolesOpen)}
+                      onMouseEnter={() => setIsRolesOpen(!isRolesOpen)}
                       className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center justify-between font-medium transition-colors"
                     >
-                      <span>Roles view</span>
-                      <span className={`text-xs text-slate-400 transition-transform duration-200 ${isRolesOpen ? 'rotate-90' : ''}`}>►</span>
+                      <span>Roles</span>
+                      <span className={`text-xs text-slate-400 transition-transform duration-200 `}>►</span>
                     </button>
 
                     {isRolesOpen && (
                       <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-100 rounded-xl shadow-xl py-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                        {(user?.isAdmin ? (
+                            <Link href={'/admin'}
+                              onClick={() => {
+                                setIsRolesOpen(false);
+                                setIsProfileOpen(false);
+                              }}>
+                            <div className='w-full text-left px-4 py-1.5 text-sm font-medium transition-colors border-b border-gray-200'>Administrator</div>            
+                            </Link>) : '')}
                         {([
-                          ...(user?.isAdmin ? ['Administrator'] : []),
                           ...(user?.role === 'MANAGER' ? ['Manager', roleBase] : []),
                           ...(user?.role === 'LEADER' ? ['Leader', roleBase] : []),
                           ...(user?.role === 'USER' ? [roleBase] : []),
@@ -193,6 +220,7 @@ export default function Navbar() {
                   <Link
                     href="/profile"
                     className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 font-medium transition-colors"
+                    onClick={() => setIsProfileOpen(false)}
                   >
                     My Profiles
                   </Link>

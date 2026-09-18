@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 // ข้อมูลจำลองพนักงาน (Mock Data)
@@ -40,9 +41,12 @@ export default function AdminPage() {
               <span className="font-bold tracking-wide text-lg text-white">ADMIN CONSOLE</span>
             </div>
             <div className="flex items-center gap-4">
-              <button className="text-sm text-slate-400 hover:text-white transition-colors">
-                กลับสู่หน้าผู้ใช้ปกติ
-              </button>
+              <Link href={'/'}>
+                <button className="text-sm text-slate-400 hover:text-white transition-colors">
+                  กลับสู่หน้าผู้ใช้ปกติ
+                </button>
+              </Link>
+                          
             </div>
           </div>
         </div>
@@ -54,7 +58,8 @@ export default function AdminPage() {
         {/* หัวข้อและระบบค้นหา */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">ระบบจัดการผู้ใช้งาน (User Management)</h1>
+            <h1 className="text-4xl text-red-500">ยังไม่ได้ทำจ้า！！！</h1>
+            <h1 className="text-3xl font-bold text-white line-through">ระบบจัดการผู้ใช้งาน (User Management)</h1>
             <p className="text-slate-400 mt-2">กำหนดสิทธิ์การเข้าถึงและการสร้างเนื้อหาของพนักงาน</p>
           </div>
           
