@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
-export default function ProfileTab({ user, refreshUser, setUser }: { user: any, refreshUser: () => void }) {
+export default function ProfileTab({ user, refreshUser, setUser }: { user: any, refreshUser: () => void, setUser: (user: any) => void }) {
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'error'>('idle');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -118,7 +118,6 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
                   {uploadStatus === 'idle' && (
                     <button
                       onClick={handleRemoveImage}
-                      disabled={uploadStatus === 'uploading'}
                       className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded-full text-xs shadow transition-colors z-10"
                       title={previewImage ? "ยกเลิกรูปนี้" : "ลบรูปโปรไฟล์"}
                     >
