@@ -3,12 +3,17 @@ import { createClient } from '@supabase/supabase-js';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SECRET_KEY!
-);
-
 const BUCKET_NAME = 'ESP_E-learning_resource';
+
+const getSupabaseClient = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  
+  if (!url || !key) {
+    throw new Error('Missing Supabase Environment Variables on Vercel');
+  }
+  return createClient(url, key);
+};
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +34,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'กรุณาระบุไฟล์และเซสชันให้ถูกต้อง' }, { status: 400 });
     }
 
+    // 🌟 ดักจับขนาดไฟล์: ป้องกัน Vercel ล่มถ้าไฟล์เกิน 4.5MB (ตั้งไว้ที่ 2MB กำลังดี)
+    if (file.size > 2 * 1024 * 1024) {
+      return NextResponse.json({ error: 'ขนาดไฟล์รูปภาพต้องไม่เกิน 2MB' }, { status: 400 });
+    }
+
+    const supabase = getSupabaseClient(); // 🌟 เรียกใช้ตรงนี้
     const user = await prisma.user.findUnique({ where: { id: userId } });
     
     if (user?.profileImage && user.profileImage.includes(BUCKET_NAME)) {
@@ -94,6 +105,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'ไม่พบข้อมูล User ID ในเซสชัน' }, { status: 400 });
     }
 
+    const supabase = getSupabaseClient(); // 🌟 เรียกใช้ตรงนี้
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (user?.profileImage && user.profileImage.includes(BUCKET_NAME)) {
