@@ -46,7 +46,7 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
     formData.append('userId', String(user.id));
 
     try {
-      const res = await fetch('/api/profile/avatar', {
+      const res = await fetch('/api/upload/avatar', {
         method: 'POST',
         body: formData,
       });
@@ -78,7 +78,7 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
 
     setUploadStatus('uploading');
     try {
-      const res = await fetch(`/api/profile/avatar?userId=${user.id}`, {
+      const res = await fetch(`/api/upload/avatar?userId=${user.id}`, {
         method: 'DELETE',
       });
 
@@ -112,7 +112,7 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
               
               {displayImage ? (
                 <>
-                  <Image src={displayImage} alt="Profile" fill className="object-cover" />
+                  <Image src={displayImage} alt="Profile" fill className="object-cover" unoptimized />
                   
                   {/* โชว์ปุ่ม 'ลบรูป (X)' เฉพาะเมื่อไม่ใช่โหมดพรีวิว และไม่ได้ติด Error */}
                   {uploadStatus === 'idle' && (

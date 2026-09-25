@@ -27,7 +27,7 @@ const notifyListeners = (user: UserSession | null) => {
 
 export const fetchUser = async (): Promise<UserSession | null> => {
   try {
-    const res = await fetch('/api/me');
+    const res = await fetch('/api/auth/session');
     if (res.ok) {
       const data = await res.json();
       if (data.user) {

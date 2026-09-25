@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 const ActiveDirectory = require('activedirectory2');
+import { createSession } from '@/lib/session';
 
 async function fetchEmpIdFromExternalDB(adUsername: string) {
   try {
@@ -19,7 +20,6 @@ async function fetchEmpIdFromExternalDB(adUsername: string) {
       };
     }
     
-    // ถ้าหาไม่เจอ
     return { empId: null, firstName: null, lastName: null, department: null, team: null, role: null };
 
   } catch (error) {
@@ -55,34 +55,28 @@ export async function POST(request: Request) {
     const isTestUser = testUsers.some(user => user.username === username);
     
     if (isTestUser && password === testPassword) {
-      const testUser = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { empId: testUsers.find(user => user.username === username)?.empId || 'non-existent' }
       });
 
-      if (testUser) {
-        const response = NextResponse.json({ success: true, user: testUser });
-        
-        response.cookies.set('user_session', JSON.stringify({
-            id: testUser.id,
-            empId: testUser.empId,
-            username: testUser.username,
-            firstName: testUser.firstName,
-            lastName: testUser.lastName,
-            email: testUser.email,
-            department: testUser.department,
-            team: testUser.team,
-            role: testUser.role,
-            isAdmin: testUser.isAdmin,
-            profileImage: testUser.profileImage || null,
-        }), {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 60 * 60 * 1,
-        });
+      if (user) {
+        const sessionData = {
+          id: user.id,
+          empId: user.empId,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          department: user.department,
+          team: user.team,
+          role: user.role,
+          isAdmin: user.isAdmin,
+          profileImage: user.profileImage || null,
+        };
 
-        return response;
+        await createSession(sessionData);
+
+        return NextResponse.json({ success: true, user });
       }
     }
 
@@ -171,9 +165,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const response = NextResponse.json({ success: true, user });
-    
-    response.cookies.set('user_session', JSON.stringify({
+    const sessionData = {
       id: user.id,
       empId: user.empId,
       username: user.username,
@@ -185,15 +177,11 @@ export async function POST(request: Request) {
       role: user.role,
       isAdmin: user.isAdmin,
       profileImage: user.profileImage || null,
-    }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 1, 
-    });
+    };
 
-    return response;
+    await createSession(sessionData);
+
+    return NextResponse.json({ success: true, user });
 
   } catch (error: any) {
     console.error('System Error:', error);

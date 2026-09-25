@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { getSession } from '@/lib/session';
 
 export async function GET() {
   try {
-    const cookieStore = await cookies(); 
-    const session = cookieStore.get('user_session');
+    const user = await getSession();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ user: null }, { status: 401 });
     }
 
-    const user = JSON.parse(session.value);
     return NextResponse.json({ user });
   } catch (error) {
     return NextResponse.json({ user: null }, { status: 500 });
