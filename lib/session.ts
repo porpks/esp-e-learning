@@ -4,10 +4,11 @@ export const SESSION_COOKIE_NAME = 'user_session';
 
 export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  // secure: process.env.NODE_ENV === 'production',
+  secure: process.env.COOKIE_SECURE === 'true',
   sameSite: 'lax' as const,
   path: '/',
-  maxAge: 60 * 60 * 8, // 8 ชั่วโมง
+  maxAge: 60 * 60 * 8,
 };
 
 export async function getSession() {
@@ -49,6 +50,6 @@ export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, '', {
     ...SESSION_COOKIE_OPTIONS,
-    maxAge: 0, // สั่งให้ Cookie หมดอายุทันที
+    maxAge: 0,
   });
 }
