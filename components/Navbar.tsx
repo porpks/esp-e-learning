@@ -60,7 +60,7 @@ export default function Navbar() {
       id: 2, 
       title: 'ประกาศข่าวใหม่', 
       detail: 'เปิดตัวคอร์สเรียน CAD & NX Standard ใหม่ล่าสุด', 
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
       isUnread: true, 
       link: '/knowledge-base' 
     },

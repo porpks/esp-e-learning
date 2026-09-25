@@ -1,65 +1,42 @@
-'use client';
-
 import React from 'react';
+import Link from 'next/link';
 
-export interface CourseCardProps {
+export interface CourseType {
   id: number;
+  path: string;
   title: string;
   description: string;
+  hours: string;
   category: string;
-  progress: number;
-  statusText?: string;
-  actionText: string;
-  badgeColor?: string;
-  headerBgColor?: string;
-  onAction?: () => void;
+  image: string;
 }
 
-export default function CourseCard({
-  title,
-  description,
-  category,
-  progress,
-  actionText,
-  badgeColor = 'bg-slate-200 text-slate-700',
-  headerBgColor = 'bg-slate-300',
-  onAction,
-}: CourseCardProps) {
+export default function CourseCard({ course }: { course: CourseType }) {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col justify-between transition-all hover:shadow-md">
-      <div>
-        {/* ปกคอร์สส่วนบน */}
-        <div className={`h-36 ${headerBgColor} p-3 relative flex justify-end`}>
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
-            {category}
+    <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer">
+      <Link href={`/courses/${course.path}/`}>
+        {/* ปกคอร์ส */}
+        <div className="h-40 bg-slate-200 relative overflow-hidden">
+          <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+          <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900/60 text-white backdrop-blur-sm">
+            {course.category}
           </span>
         </div>
 
-        {/* เนื้อหาคอร์ส */}
+        {/* รายละเอียด */}
         <div className="p-4 space-y-2">
-          <h4 className="font-bold text-slate-800 text-sm line-clamp-1">{title}</h4>
-          <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{description}</p>
+          <h3 className="font-bold text-sm text-slate-900 line-clamp-1">{course.title}</h3>
+          <p className="text-xs text-slate-500 line-clamp-2">{course.description}</p>
+          <p className="text-[11px] text-slate-400 pt-1">ชั่วโมงเรียน {course.hours}</p>
         </div>
-      </div>
+      </Link>
 
-      {/* Progress & Action Button */}
-      <div className="p-4 pt-0 space-y-3">
-        <div>
-          <div className="flex justify-between text-[10px] text-slate-400 mb-1">
-            <span>ความคืบหน้า</span>
-            <span>{progress}%</span>
-          </div>
-          <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-            <div className="bg-blue-600 h-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
-          </div>
-        </div>
-
-        <button
-          onClick={onAction}
-          className="w-full py-1.5 bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs rounded-lg transition-colors shadow-sm cursor-pointer"
-        >
-          {actionText}
-        </button>
+      <div className="p-4 pt-0">
+        <Link href={`/courses/${course.path}/learn`}>
+          <button className="w-full py-2 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-xs rounded-xl shadow transition-colors cursor-pointer">
+            เริ่มเรียนเลย
+          </button>
+        </Link>
       </div>
     </div>
   );
