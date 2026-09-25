@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     });
     await s3Client.send(uploadCommand);
 
-    const newImageUrl = `${process.env.MINIO_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
+    const newImageUrl = `${process.env.MINIO_ENDPOINT_FOR_CLIENT}/${BUCKET_NAME}/${fileName}`;
 
     // อัปเดต Database
     await prisma.user.update({

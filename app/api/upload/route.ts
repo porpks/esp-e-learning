@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     });
     await s3Client.send(command);
 
-    const fileUrl = `${process.env.MINIO_ENDPOINT}/${BUCKET_NAME}/${uniqueName}`;
+    const fileUrl = `${process.env.MINIO_ENDPOINT_FOR_CLIENT}/${BUCKET_NAME}/${uniqueName}`;
 
     // 💾 3. บันทึกลง Database
     const document = await prisma.document.create({
