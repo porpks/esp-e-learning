@@ -30,6 +30,15 @@ async function main() {
       team: 'Manager', japaneseLevel: 'N2'
     },
   });
+  
+  const instructor = await prisma.user.upsert({
+    where: { empId: '2001' }, update: {},
+    create: { 
+      empId: '2001', username: 'Instructor_Test', firstName: 'Trainer', lastName: 'Forever',
+      email: 'trainer_t@esp-group.asia', role: 'INSTRUCTOR', department: 'CAD', 
+      team: 'A07'
+    },
+  });
 
   const leadCAD = await prisma.user.upsert({
     where: { empId: '1003' }, update: {},
@@ -141,7 +150,7 @@ async function main() {
     data: {
       title: 'วิธีรับมือกับความเครียด',
       description: 'คอร์สนี้จะพาพนักงานไปรู้วิธีการต่างๆ ในการจัดการความเครียดจากการทำงาน',
-      path: 'stress-management', type: 'GENERAL', category: 'Soft Skill', creatorId: admin.id,
+      path: 'stress-management', type: 'GENERAL', category: 'Soft Skill', creatorId: instructor.id,
       thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=80',
       lessons: {
         create: [

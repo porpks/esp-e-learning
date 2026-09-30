@@ -3,7 +3,6 @@ import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import Navbar from '@/components/Navbar';
 import HeroCarousel from '@/components/HeroCarousel';
-import AnnouncementBanner from '@/components/AnnouncementBanner';
 import CourseCard, { CourseType } from '@/components/CourseCard';
 import { getSession } from '@/lib/session';
 

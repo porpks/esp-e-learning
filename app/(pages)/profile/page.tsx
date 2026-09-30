@@ -15,7 +15,7 @@ export default function ProfilePage() {
 
   if (loadingUser) {
     return (
-      <div className="max-w-6xl mx-auto p-12 text-center text-slate-500 font-mono">
+      <div className="max-w-6xl mx-auto p-12 text-center text-esp-mutedblue font-medium text-d3">
         Loading profile data...
       </div>
     );
@@ -27,32 +27,40 @@ export default function ProfilePage() {
       <div className="flex gap-2 mb-0">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-6 py-2.5 rounded-t-xl font-bold text-sm transition-colors ${
-            activeTab === 'profile' ? 'bg-blue-100 text-slate-800' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+          className={`px-6 py-2.5 rounded-t-xl font-bold text-d4 transition-colors cursor-pointer ${
+            activeTab === 'profile' 
+              ? 'bg-esp-text text-esp-white' 
+              : 'bg-esp-softblue text-esp-mutedblue hover:bg-esp-lightblue hover:text-esp-text'
           }`}
         >
           Profile
         </button>
         <button
           onClick={() => setActiveTab('courses')}
-          className={`px-6 py-2.5 rounded-t-xl font-bold text-sm transition-colors ${
-            activeTab === 'courses' ? 'bg-cyan-100 text-slate-800' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+          className={`px-6 py-2.5 rounded-t-xl font-bold text-d4 transition-colors cursor-pointer ${
+            activeTab === 'courses' 
+              ? 'bg-esp-text text-esp-white' 
+              : 'bg-esp-softblue text-esp-mutedblue hover:bg-esp-lightblue hover:text-esp-text'
           }`}
         >
           My Course
         </button>
         <button
           onClick={() => setActiveTab('certificates')}
-          className={`px-6 py-2.5 rounded-t-xl font-bold text-sm transition-colors ${
-            activeTab === 'certificates' ? 'bg-yellow-200 text-slate-800' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+          className={`px-6 py-2.5 rounded-t-xl font-bold text-d4 transition-colors cursor-pointer ${
+            activeTab === 'certificates' 
+              ? 'bg-esp-text text-esp-white' 
+              : 'bg-esp-softblue text-esp-mutedblue hover:bg-esp-lightblue hover:text-esp-text'
           }`}
         >
           My Certificates
         </button>
         <button
           onClick={() => setActiveTab('japanese')}
-          className={`px-6 py-2.5 rounded-t-xl font-bold text-sm transition-colors ${
-            activeTab === 'japanese' ? 'bg-rose-100 text-slate-800' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+          className={`px-6 py-2.5 rounded-t-xl font-bold text-d4 transition-colors cursor-pointer ${
+            activeTab === 'japanese' 
+              ? 'bg-esp-text text-esp-white' 
+              : 'bg-esp-softblue text-esp-mutedblue hover:bg-esp-lightblue hover:text-esp-text'
           }`}
         >
           Japanese Levels

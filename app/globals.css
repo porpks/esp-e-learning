@@ -1,31 +1,72 @@
-/* นำเข้า Tailwind v4 แบบใหม่ */
 @import "tailwindcss";
 
 /* บังคับให้ Tailwind รู้จัก Dark Mode จากปุ่มกดของเรา (คลาส .dark) */
 @custom-variant dark (&:is(.dark *));
 
-/*:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 🌟 ตั้งค่า Theme สำหรับ Tailwind v4 โดยเฉพาะ */
+@theme {
+  /* หมวดหมู่สี (อิงจาก Figma) */
+  --color-esp-white: #FFFFFF;
+  --color-esp-lightblue: #BDEBFF;
+  --color-esp-mutedblue: #8DA9C4;
+  --color-esp-softblue: #E8F6FF;
+  --color-esp-bg: #EEF4F8;
+  --color-esp-text: #0B2545;
+  --color-esp-nav: #1D2A44;
+  --color-esp-primary: #134074;
+
+  /* หมวดหมู่ฟอนต์ */
+  --font-sans: "Segoe UI", sans-serif;
+
+  /* หมวดหมู่ขนาดตัวอักษร พร้อม Line Height และ Font Weight */
+  --text-big: 128px;
+  --text-big--line-height: 1.2;
+  --text-big--font-weight: 700;
+
+  --text-h1: 64px;
+  --text-h1--line-height: 1.2;
+  --text-h1--font-weight: 700;
+
+  --text-h2: 48px;
+  --text-h2--line-height: 1.2;
+  --text-h2--font-weight: 700;
+
+  --text-h3: 40px;
+  --text-h3--line-height: 1.2;
+  --text-h3--font-weight: 700;
+
+  --text-h4: 32px;
+  --text-h4--line-height: 1.2;
+  --text-h4--font-weight: 700;
+
+  --text-subtitle: 32px;
+  --text-subtitle--line-height: 1.5;
+  --text-subtitle--font-weight: 400;
+
+  --text-btn: 36px;
+  --text-btn--line-height: 1.5;
+  --text-btn--font-weight: 700;
+
+  --text-d1: 28px;
+  --text-d1--line-height: 1.5;
+  --text-d1--font-weight: 400;
+
+  --text-d2: 24px;
+  --text-d2--line-height: 1.5;
+  --text-d2--font-weight: 400;
+
+  --text-d3: 20px;
+  --text-d3--line-height: 1.5;
+  --text-d3--font-weight: 400;
+
+  --text-d4: 16px;
+  --text-d4--line-height: 1.5;
+  --text-d4--font-weight: 400;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* กำหนดพื้นหลังและสีตัวอักษรพื้นฐานให้เว็บ */
+@layer base {
+  body {
+    @apply bg-esp-bg text-esp-text font-sans;
   }
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-*/

@@ -100,15 +100,15 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
   const displayImage = previewImage || user?.profileImage;
 
   return (
-    <div className="bg-blue-50/70 rounded-b-2xl rounded-tr-2xl p-8 space-y-8 min-h-[600px]">
+    <div className="bg-esp-white border border-esp-lightblue shadow-sm rounded-b-2xl rounded-tr-2xl p-8 space-y-8 min-h-[600px]">
       <section>
-        <h2 className="text-xl font-bold text-slate-900 mb-6">ข้อมูลส่วนตัว</h2>
+        <h2 className="text-d2 font-bold text-esp-text mb-6">ข้อมูลส่วนตัว</h2>
         <div className="flex flex-col md:flex-row gap-8 items-start">
           
           {/* ส่วนจัดการรูปโปรไฟล์ */}
           <div className="flex flex-col items-center gap-3 shrink-0">
             {/* กรอบรูป (เปลี่ยนสีขอบเป็นสีแดงเมื่อ Error) */}
-            <div className={`relative w-48 h-48 bg-white rounded-xl flex flex-col items-center justify-center overflow-hidden shadow-sm border-4 transition-colors ${uploadStatus === 'error' ? 'border-red-500' : 'border-slate-200'}`}>
+            <div className={`relative w-48 h-48 bg-esp-white rounded-xl flex flex-col items-center justify-center overflow-hidden shadow-sm border-4 transition-colors ${uploadStatus === 'error' ? 'border-red-500' : 'border-esp-softblue'}`}>
               
               {displayImage ? (
                 <>
@@ -126,12 +126,12 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
                   )}
                 </>
               ) : (
-                <span className="text-slate-400 font-mono text-lg">Picture</span>
+                <span className="text-esp-mutedblue font-bold text-d3">Picture</span>
               )}
 
               {/* ปุ่ม Upload เริ่มต้น (ซ่อนเมื่อมีพรีวิวรูป หรือกำลัง Error) */}
               {!previewImage && uploadStatus !== 'error' && (
-                <label className={`absolute bottom-2 ${uploadStatus === 'uploading' ? 'bg-slate-300' : 'bg-slate-200 hover:bg-slate-300'} text-slate-700 text-xs px-4 py-1 rounded cursor-pointer transition-colors z-10`}>
+                <label className={`absolute bottom-2 ${uploadStatus === 'uploading' ? 'bg-slate-300 text-slate-500' : 'bg-esp-softblue hover:bg-esp-lightblue text-esp-primary'} text-xs font-bold px-4 py-1.5 rounded-lg cursor-pointer transition-colors z-10`}>
                   {uploadStatus === 'uploading' ? 'Processing...' : 'Upload'}
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} hidden disabled={uploadStatus === 'uploading'} />
                 </label>
@@ -142,7 +142,7 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
             <div className="h-10 flex items-center justify-center">
               {uploadStatus === 'error' ? (
                 <button
-                  onClick={handleCancelUpload} // ทำหน้าที่เป็น Refresh กลับสู่สถานะเดิม
+                  onClick={handleCancelUpload}
                   className="px-4 py-1.5 bg-red-100 text-red-600 hover:bg-red-200 font-bold text-sm rounded-lg transition-colors flex items-center gap-1 shadow-sm"
                 >
                   ↻ Refresh
@@ -152,14 +152,14 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
                   <button
                     onClick={handleConfirmUpload}
                     disabled={uploadStatus === 'uploading'}
-                    className="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-sm rounded-lg transition-colors shadow-sm disabled:opacity-50"
+                    className="px-4 py-1.5 bg-esp-primary hover:opacity-90 text-esp-white font-bold text-sm rounded-lg transition-opacity shadow-sm disabled:opacity-50 cursor-pointer"
                   >
                     {uploadStatus === 'uploading' ? 'Uploading...' : 'Confirm'}
                   </button>
                   <button
                     onClick={handleCancelUpload}
                     disabled={uploadStatus === 'uploading'}
-                    className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm rounded-lg transition-colors shadow-sm disabled:opacity-50"
+                    className="px-4 py-1.5 bg-esp-softblue hover:bg-esp-lightblue text-esp-primary font-bold text-sm rounded-lg transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -170,76 +170,77 @@ export default function ProfileTab({ user, refreshUser, setUser }: { user: any, 
           {/* จบส่วนจัดการรูปโปรไฟล์ */}
 
           {/* ข้อมูลส่วนตัวด้านขวา */}
-          <div className="grid grid-cols-2 gap-x-8 gap-y-3 font-mono text-sm text-slate-700 pt-2">
-            <span className="font-semibold text-slate-500">Login</span>
-            <span>{user?.username || '-'}</span>
-            <span className="font-semibold text-slate-500">Team</span>
-            <span>{user?.team || '-'}</span>
-            <span className="font-semibold text-slate-500">First Name</span>
-            <span>{user?.firstName || '-'}</span>
-            <span className="font-semibold text-slate-500">Last Name</span>
-            <span>{user?.lastName || '-'}</span>
-            <span className="font-semibold text-slate-500">Employee No.</span>
-            <span>{user?.empId || '-'}</span>
-            <span className="font-semibold text-slate-500">Email</span>
-            <span className="text-blue-600">{user?.email || '-'}</span>
-            <span className="font-semibold text-slate-500">Japanese Level</span>
-            <span>{user?.japaneseLevel || '-'}</span>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-d4 text-esp-text pt-2">
+            <span className="font-semibold text-esp-mutedblue">Login</span>
+            <span className="font-medium">{user?.username || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">Team</span>
+            <span className="font-medium">{user?.team || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">First Name</span>
+            <span className="font-medium">{user?.firstName || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">Last Name</span>
+            <span className="font-medium">{user?.lastName || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">Employee No.</span>
+            <span className="font-medium">{user?.empId || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">Email</span>
+            <span className="font-bold text-esp-primary">{user?.email || '-'}</span>
+            <span className="font-semibold text-esp-mutedblue">Japanese Level</span>
+            <span className="font-medium">{user?.japaneseLevel || '-'}</span>
           </div>
         </div>
       </section>
 
-      {/* สถิติและข้อมูลอื่นๆ คงเดิม */}
+      {/* สถิติและข้อมูลอื่นๆ */}
       <section>
-        <h2 className="text-lg font-bold text-slate-900 mb-4">สถิติการเรียนโดยรวม</h2>
+        <h2 className="text-d2 font-bold text-esp-text mb-4">สถิติการเรียนโดยรวม</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-xl h-24 shadow-sm border border-slate-100 flex flex-col justify-between">
-            <span className="text-xs text-slate-500">ชั่วโมงเรียนสะสม</span>
-            <span className="text-xl font-bold text-slate-800">{stats?.totalHours ?? '0'} ชม.</span>
+          {/* 🌟 ปรับการ์ดสถิติให้ใช้สี Theme */}
+          <div className="bg-esp-softblue p-5 rounded-xl h-24 shadow-sm border border-esp-lightblue flex flex-col justify-between">
+            <span className="text-d4 text-esp-mutedblue font-medium">ชั่วโมงเรียนสะสม</span>
+            <span className="text-d3 font-bold text-esp-text">{stats?.totalHours ?? '0'} ชม.</span>
           </div>
-          <div className="bg-white p-5 rounded-xl h-24 shadow-sm border border-slate-100 flex flex-col justify-between">
-            <span className="text-xs text-slate-500">คอร์สเรียนของฉัน</span>
-            <span className="text-xl font-bold text-slate-800">{stats?.totalCourses ?? '0'} คอร์ส</span>
+          <div className="bg-esp-softblue p-5 rounded-xl h-24 shadow-sm border border-esp-lightblue flex flex-col justify-between">
+            <span className="text-d4 text-esp-mutedblue font-medium">คอร์สเรียนของฉัน</span>
+            <span className="text-d3 font-bold text-esp-text">{stats?.totalCourses ?? '0'} คอร์ส</span>
           </div>
-          <div className="bg-white p-5 rounded-xl h-24 shadow-sm border border-slate-100 flex flex-col justify-between">
-            <span className="text-xs text-slate-500">เรียนจบแล้ว</span>
-            <span className="text-xl font-bold text-emerald-600">{stats?.completedCourses ?? '0'} คอร์ส</span>
+          <div className="bg-esp-softblue p-5 rounded-xl h-24 shadow-sm border border-esp-lightblue flex flex-col justify-between">
+            <span className="text-d4 text-esp-mutedblue font-medium">เรียนจบแล้ว</span>
+            <span className="text-d3 font-bold text-esp-primary">{stats?.completedCourses ?? '0'} คอร์ส</span>
           </div>
         </div>
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-slate-900 mb-4 font-mono">Achievement</h2>
+        <h2 className="text-d2 font-bold text-esp-text mb-4">Achievement</h2>
         <div className="flex gap-6">
           {achievements.length > 0 ? (
             achievements.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center gap-2">
-                <div className="w-28 h-16 bg-white rounded-lg shadow-sm border border-slate-100" />
-                <span className="text-xs font-mono text-slate-600">{item.name}</span>
+                <div className="w-28 h-16 bg-esp-softblue rounded-lg shadow-sm border border-esp-lightblue" />
+                <span className="text-d4 font-medium text-esp-text">{item.name}</span>
               </div>
             ))
           ) : (
-            <div className="text-xs text-slate-400 font-mono">ไม่มีข้อมูล Achievement</div>
+            <div className="text-d4 text-esp-mutedblue font-medium">ไม่มีข้อมูล Achievement</div>
           )}
         </div>
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-slate-900 font-mono">My Skills</h2>
-        <p className="text-xs text-slate-500 mb-4">พนักงานจะได้รับสกิล เมื่อเรียนจบคอร์สที่เกี่ยวข้องกับสกิลนั้น</p>
+        <h2 className="text-d2 font-bold text-esp-text">My Skills</h2>
+        <p className="text-d4 text-esp-mutedblue mb-4">พนักงานจะได้รับสกิล เมื่อเรียนจบคอร์สที่เกี่ยวข้องกับสกิลนั้น</p>
         <div className="flex gap-8">
           {skills.length > 0 ? (
             skills.map((skill, idx) => (
               <div key={idx} className="flex flex-col items-center text-center gap-2">
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl text-amber-300 shadow-sm">★</div>
-                <div className="text-xs font-mono text-slate-700">
+                <div className="w-20 h-20 bg-esp-softblue border border-esp-lightblue rounded-full flex items-center justify-center text-3xl text-amber-300 shadow-sm">★</div>
+                <div className="text-d4 font-medium text-esp-text">
                   <div>{skill.name}</div>
-                  <div>{skill.level}</div>
+                  <div className="text-esp-mutedblue">{skill.level}</div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-xs text-slate-400 font-mono">ยังไม่มีทักษะที่ได้รับ</div>
+            <div className="text-d4 text-esp-mutedblue font-medium">ยังไม่มีทักษะที่ได้รับ</div>
           )}
         </div>
       </section>

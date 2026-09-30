@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     // ==========================================
     const testUsers = [
         { empId: '1001', username: 'Admin_Test' },
+        { empId: '2001', username: 'Instructor_Test' },
         { empId: '1002', username: 'Manager_Test' },
         { empId: '1003', username: 'LeadCAD_Test' },
         { empId: '1004', username: 'LeadNX_Test' },

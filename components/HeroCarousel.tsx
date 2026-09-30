@@ -66,8 +66,8 @@ export default function HeroCarousel() {
 
   if (loading) {
     return (
-      <div className="w-full h-64 md:h-80 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse flex items-center justify-center text-slate-400">
-        กำลังโหลดประกาศ...
+      <div className="w-full h-64 md:h-80 bg-esp-softblue rounded-2xl animate-pulse flex items-center justify-center text-esp-mutedblue font-bold">
+        Loading...
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function HeroCarousel() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* สไลด์เนื้้อหา */}
+      {/* สไลด์เนื้อหา */}
       <div
         className="w-full h-full flex transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -90,7 +90,7 @@ export default function HeroCarousel() {
         {announcements.map((item) => (
           <div
             key={item.id}
-            className="w-full h-full flex-shrink-0 relative bg-slate-900 text-white flex items-center"
+            className="w-full h-full flex-shrink-0 relative bg-esp-nav text-esp-white flex items-center"
           >
             {/* พื้นหลังรูปภาพ (ถ้ามี) */}
             {item.imageUrl ? (
@@ -102,32 +102,24 @@ export default function HeroCarousel() {
                 priority
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-slate-800 to-indigo-950 opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-r from-esp-text via-esp-nav to-esp-primary opacity-90" />
             )}
 
             {/* ข้อความประกาศ */}
             <div className="relative z-10 max-w-3xl px-8 sm:px-12 py-6">
               {item.category && (
-                <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold uppercase tracking-wider text-blue-300 bg-blue-900/60 rounded-full border border-blue-400/30">
+                <span className="inline-block px-3 py-1 mb-3 text-xs font-bold uppercase tracking-wider text-esp-lightblue bg-esp-primary/80 rounded-full border border-esp-lightblue/40">
                   {item.category}
                 </span>
               )}
-              <h2 className="text-2xl sm:text-3xl font-extrabold line-clamp-2 drop-shadow-sm">
+              <h2 className="text-h4 sm:text-h3 font-bold line-clamp-2 drop-shadow-md text-esp-white">
                 {item.title}
               </h2>
               {item.description && (
-                <p className="mt-2 text-sm sm:text-base text-slate-200 line-clamp-2">
+                <p className="mt-3 text-d4 sm:text-d3 text-esp-softblue line-clamp-2 font-medium">
                   {item.description}
                 </p>
               )}
-              {/* {item.linkUrl && (
-                <Link
-                  href={item.linkUrl}
-                  className="inline-flex items-center gap-1.5 mt-4 text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  อ่านเพิ่มเติม <span>→</span>
-                </Link>
-              )} */}
             </div>
           </div>
         ))}
@@ -136,7 +128,7 @@ export default function HeroCarousel() {
       {/* ปุ่มเลื่อนซ้าย */}
       <button
         onClick={prevSlide}
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 focus:outline-none"
+        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-esp-text/50 hover:bg-esp-text/90 text-esp-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 focus:outline-none backdrop-blur-sm"
         aria-label="Previous Slide"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +139,7 @@ export default function HeroCarousel() {
       {/* ปุ่มเลื่อนขวา */}
       <button
         onClick={nextSlide}
-        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 focus:outline-none"
+        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-esp-text/50 hover:bg-esp-text/90 text-esp-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 focus:outline-none backdrop-blur-sm"
         aria-label="Next Slide"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,8 +155,8 @@ export default function HeroCarousel() {
             onClick={() => setCurrentIndex(index)}
             className={`h-2.5 rounded-full transition-all duration-300 ${
               currentIndex === index
-                ? 'w-8 bg-white'
-                : 'w-2.5 bg-white/50 hover:bg-white/80'
+                ? 'w-8 bg-esp-white'
+                : 'w-2.5 bg-esp-white/50 hover:bg-esp-white/80'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

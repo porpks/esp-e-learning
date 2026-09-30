@@ -41,49 +41,47 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
   const durationText = hours > 0 ? `${hours} ชั่วโมง` : `${Math.floor(totalSeconds / 60)} นาที`;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] pb-20 font-sans text-slate-800">
+    <div className="min-h-screen bg-esp-bg pb-20 text-esp-text">
       
       {/* 1. Hero Section (Header แบบ Gradient + รูปปกพื้นหลัง) */}
       <div 
-        className={`relative pt-16 pb-16 border-b border-blue-100 overflow-hidden ${
-          !course.thumbnail ? 'bg-gradient-to-b from-[#C4FFFF] to-white' : ''
+        className={`relative pt-16 pb-16 border-b border-esp-lightblue overflow-hidden ${
+          !course.thumbnail ? 'bg-gradient-to-b from-esp-lightblue to-esp-bg' : ''
         }`}
       >
-        {/* เลเยอร์รูปภาพพื้นหลังและ Gradient (จะแสดงเมื่อมีรูปปก) */}
         {course.thumbnail && (
           <>
             <div 
               className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-50 mix-blend-multiply" 
               style={{ backgroundImage: `url(${course.thumbnail})` }}
             />
-            <div className="absolute inset-0 z-10 bg-linear-to-t from-[#C4FFFF] to-transparent" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-esp-lightblue to-transparent" />
           </>
         )}
 
-        {/* เลเยอร์เนื้อหา (ต้องมี relative z-20 เพื่อให้อยู่เหนือพื้นหลังและอ่านง่าย) */}
         <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-3 drop-shadow-sm">
+          <h1 className="text-h4 md:text-h2 font-bold tracking-tight text-esp-text mb-3 drop-shadow-sm">
             {course.title}
           </h1>
-          <p className="text-lg md:text-xl text-slate-800 mb-6 font-medium max-w-3xl drop-shadow-sm">
+          <p className="text-d3 md:text-d2 text-esp-text mb-6 font-medium max-w-3xl drop-shadow-sm">
             {course.description || 'ไม่มีคำอธิบายสำหรับคอร์สนี้'}
           </p>
           
-          <div className="flex items-center text-sm font-bold text-slate-800 gap-3 mb-8 drop-shadow-sm">
+          <div className="flex items-center text-d4 font-bold text-esp-text gap-3 mb-8 drop-shadow-sm">
             <span>จำนวน {durationText}</span>
-            <span className="text-slate-500">|</span>
+            <span className="text-esp-mutedblue">|</span>
             <span>{totalSubLessons} บทเรียน</span>
-            <span className="text-slate-500">|</span>
+            <span className="text-esp-mutedblue">|</span>
             <span>Certificate</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <Link href={`/courses/${course.path}/learn`}>
-              <button className="px-8 py-3 bg-[#0B2545] hover:bg-[#134074] text-white font-bold rounded-lg shadow-md transition-colors cursor-pointer">
+              <button className="px-8 py-3 bg-esp-text hover:bg-esp-primary text-esp-white font-bold rounded-lg shadow-md transition-colors cursor-pointer">
                 เริ่มเรียนเลย
               </button>
             </Link>
-            <button className="px-8 py-3 bg-white/80 hover:bg-white text-slate-700 font-bold rounded-lg shadow-sm backdrop-blur-sm transition-colors cursor-not-allowed">
+            <button className="px-8 py-3 bg-esp-white/80 hover:bg-esp-white text-esp-text font-bold rounded-lg shadow-sm backdrop-blur-sm transition-colors cursor-not-allowed">
               ทำข้อสอบจบคอร์ส
             </button>
           </div>
@@ -96,7 +94,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
           
           {/* Left Column: Course Lessons (สไตล์ Accordion/List) */}
           <div className="flex-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-esp-white rounded-2xl shadow-sm border border-esp-lightblue overflow-hidden">
               {course.lessons.length > 0 ? (
                 <div className="flex flex-col">
                   {course.lessons.map((lesson, lessonIdx) => {
@@ -106,16 +104,16 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
                       : `${Math.floor(lessonSecs / 60)} นาที`;
 
                     return (
-                      <div key={lesson.id} className="border-b border-slate-100 last:border-0">
+                      <div key={lesson.id} className="border-b border-esp-lightblue/50 last:border-0">
                         {/* Lesson Header */}
                         <div className="px-8 py-6 flex justify-between items-start">
                           <div>
-                            <h3 className="font-bold text-lg text-slate-900">
+                            <h3 className="font-bold text-d2 text-esp-text">
                               Lesson {lessonIdx + 1}: {lesson.title}
                             </h3>
-                            <div className="text-xs text-slate-500 font-medium mt-1">{lessonDuration}</div>
+                            <div className="text-d4 text-esp-mutedblue font-medium mt-1">{lessonDuration}</div>
                           </div>
-                          <button className="text-xs text-slate-400 font-bold hover:text-slate-600 flex items-center gap-1">
+                          <button className="text-d4 text-esp-mutedblue font-bold hover:text-esp-text flex items-center gap-1 cursor-pointer">
                             รายละเอียด ▼
                           </button>
                         </div>
@@ -124,11 +122,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
                         <div className="px-8 pb-6 space-y-4">
                           {lesson.subLessons.map((sub, subIdx) => (
                             <div key={sub.id} className="flex items-center justify-between group">
-                              <div className="flex items-center gap-4 text-sm font-medium text-slate-700">
-                                <div className="w-3.5 h-3.5 rounded-full bg-slate-200 shrink-0"></div>
+                              <div className="flex items-center gap-4 text-d4 font-medium text-esp-text">
+                                <div className="w-3.5 h-3.5 rounded-full bg-esp-lightblue shrink-0"></div>
                                 <span>Lesson {lessonIdx + 1}.{subIdx + 1}: {sub.title}</span>
                               </div>
-                              <div className="text-xs text-slate-400 font-mono">
+                              <div className="text-d4 text-esp-mutedblue">
                                 {Math.floor(sub.durationSec / 60) > 0 ? `${Math.floor(sub.durationSec / 60)} Mins` : '< 1 Min'}
                               </div>
                             </div>
@@ -139,7 +137,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
                   })}
                 </div>
               ) : (
-                <div className="text-center py-12 text-slate-400 font-medium">
+                <div className="text-center py-12 text-esp-mutedblue font-medium">
                   ยังไม่มีการเพิ่มเนื้อหาในคอร์สนี้
                 </div>
               )}
@@ -151,18 +149,18 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ p
             
             {/* Skills Section */}
             <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-4">ทักษะที่จะได้รับ</h3>
+              <h3 className="text-d3 font-bold text-esp-text mb-4">ทักษะที่จะได้รับ</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-slate-200 text-slate-700 text-[10px] font-bold rounded-full">Data Analysis</span>
-                <span className="px-3 py-1 bg-slate-200 text-slate-700 text-[10px] font-bold rounded-full">Analytical Skills</span>
-                <span className="px-3 py-1 bg-slate-200 text-slate-700 text-[10px] font-bold rounded-full">Data Cleansing</span>
+                <span className="px-3 py-1 bg-esp-softblue text-esp-primary text-d4 font-bold rounded-full">Data Analysis</span>
+                <span className="px-3 py-1 bg-esp-softblue text-esp-primary text-d4 font-bold rounded-full">Analytical Skills</span>
+                <span className="px-3 py-1 bg-esp-softblue text-esp-primary text-d4 font-bold rounded-full">Data Cleansing</span>
               </div>
             </div>
 
             {/* Certificate Section */}
             <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-3">Certificate</h3>
-              <a href="#" className="text-blue-500 hover:text-blue-600 font-medium text-sm underline underline-offset-4 decoration-blue-200 hover:decoration-blue-500 transition-colors">
+              <h3 className="text-d3 font-bold text-esp-text mb-3">Certificate</h3>
+              <a href="#" className="text-esp-primary hover:opacity-80 font-medium text-d4 underline underline-offset-4 decoration-esp-lightblue hover:decoration-esp-primary transition-colors">
                 {course.title}.pdf
               </a>
             </div>

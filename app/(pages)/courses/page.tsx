@@ -95,21 +95,35 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   const animationKey = `${searchQuery}-${selectedCategories.join('-')}-${minDur}-${maxDur}-${sortBy}-${currentPage}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 pb-16">
+    <div className="min-h-screen bg-esp-bg text-esp-text pb-16">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-black tracking-wider text-[#0B2545]">ESP COURSES</h1>
+          <h1 className="text-h3 md:text-h1 font-bold tracking-wider text-esp-text">ESP COURSES</h1>
           <div className="max-w-2xl mx-auto">
             <SearchInput defaultValue={searchQuery} />
           </div>
         </div>
 
         <div className="flex justify-center gap-4">
-          <Link href={`/courses?tab=all${searchQuery ? `&q=${searchQuery}` : ''}`} className={`px-8 py-2.5 rounded-full text-sm font-bold shadow-sm transition-all ${activeTab === 'all' ? 'bg-[#0B2545] text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'}`}>
+          <Link 
+            href={`/courses?tab=all${searchQuery ? `&q=${searchQuery}` : ''}`} 
+            className={`px-8 py-2.5 rounded-full text-d4 font-bold shadow-sm transition-all ${
+              activeTab === 'all' 
+                ? 'bg-esp-text text-esp-white' 
+                : 'bg-esp-white text-esp-mutedblue hover:text-esp-text border border-esp-lightblue'
+            }`}
+          >
             คอร์สเรียนทั้งหมด
           </Link>
-          <Link href={`/courses?tab=path${searchQuery ? `&q=${searchQuery}` : ''}`} className={`px-8 py-2.5 rounded-full text-sm font-bold shadow-sm transition-all ${activeTab === 'path' ? 'bg-[#0B2545] text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'}`}>
+          <Link 
+            href={`/courses?tab=path${searchQuery ? `&q=${searchQuery}` : ''}`} 
+            className={`px-8 py-2.5 rounded-full text-d4 font-bold shadow-sm transition-all ${
+              activeTab === 'path' 
+                ? 'bg-esp-text text-esp-white' 
+                : 'bg-esp-white text-esp-mutedblue hover:text-esp-text border border-esp-lightblue'
+            }`}
+          >
             Learning Path
           </Link>
         </div>
@@ -125,30 +139,28 @@ export default async function CoursesPage({ searchParams }: PageProps) {
 
             <div className="lg:col-span-3 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-2xl font-black text-slate-900">
+                <h2 className="text-h4 md:text-d1 font-bold text-esp-text">
                   {selectedCategories.length === 0 ? 'คอร์สเรียนทั้งหมด' : `ค้นหา: ${selectedCategories.join(', ')}`}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-slate-500">เรียงตาม:</span>
+                  <span className="text-d4 font-bold text-esp-mutedblue">เรียงตาม:</span>
                   <SortSelect defaultValue={sortBy} />
                 </div>
               </div>
 
               <FadeTransition trackKey={animationKey}>
                 {paginatedCourses.length === 0 ? (
-                  <div className="text-center py-20 text-slate-500">
+                  <div className="text-center py-20 text-esp-mutedblue text-d3 font-medium">
                     ไม่พบคอร์สเรียนที่ตรงกับการค้นหา
                   </div>
                 ) : (
                   <div className="flex flex-col h-full">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                      {/* 🌟 แสดงผลคอร์สที่ตัดแบ่งมาแล้ว 15 คอร์ส */}
                       {paginatedCourses.map((course) => (
                         <CourseCard key={course.id} course={course} />
                       ))}
                     </div>
 
-                    {/* 🌟 แสดง Component เปลี่ยนหน้าด้านล่างสุด */}
                     <Pagination currentPage={currentPage} totalPages={totalPages} />
                   </div>
                 )}
@@ -159,14 +171,14 @@ export default async function CoursesPage({ searchParams }: PageProps) {
         )}
 
         {activeTab === 'path' && (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm min-h-[50vh] flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-16 h-16 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mb-2">
+          <div className="bg-esp-white p-8 rounded-2xl border border-esp-lightblue shadow-sm min-h-[50vh] flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-16 h-16 bg-esp-softblue text-esp-primary rounded-full flex items-center justify-center mb-2">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-black text-slate-900">Learning Path</h2>
-            <p className="text-slate-500 max-w-md">อยู่ในระหว่างการพัฒนา นะจ๊ะ</p>
+            <h2 className="text-h4 font-bold text-esp-text">Learning Path</h2>
+            <p className="text-esp-mutedblue max-w-md text-d3">อยู่ในระหว่างการพัฒนา นะจ๊ะ</p>
           </div>
         )}
 

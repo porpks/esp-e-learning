@@ -17,7 +17,7 @@ export function SearchInput({ defaultValue }: { defaultValue: string }) {
       if (term) params.set('q', term);
       else params.delete('q');
       
-      params.delete('page'); // 🌟 ค้นหาใหม่ต้องเริ่มหน้า 1
+      params.delete('page');
       router.push(`${pathname}?${params.toString()}`);
     }, 500);
   };
@@ -28,7 +28,7 @@ export function SearchInput({ defaultValue }: { defaultValue: string }) {
       defaultValue={defaultValue}
       onChange={(e) => handleSearch(e.target.value)}
       placeholder="What you want to study today?"
-      className="w-full px-6 py-3 rounded-full bg-cyan-50/80 border border-cyan-200 text-slate-800 text-sm outline-none shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-400 transition-shadow"
+      className="w-full px-6 py-3 rounded-full bg-esp-softblue/80 border border-esp-lightblue text-esp-text text-sm outline-none shadow-sm placeholder-esp-mutedblue focus:ring-2 focus:ring-esp-primary transition-shadow"
     />
   );
 }
@@ -42,7 +42,7 @@ export function SortSelect({ defaultValue }: { defaultValue: string }) {
   const handleSort = (val: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sort', val);
-    params.delete('page'); // 🌟 เปลี่ยนการจัดเรียงต้องเริ่มหน้า 1
+    params.delete('page');
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -50,7 +50,7 @@ export function SortSelect({ defaultValue }: { defaultValue: string }) {
     <select
       defaultValue={defaultValue}
       onChange={(e) => handleSort(e.target.value)}
-      className="text-sm border-slate-200 rounded-lg focus:ring-[#0092DF] focus:border-[#0092DF] py-1.5 px-3 cursor-pointer outline-none shadow-sm"
+      className="text-sm border-slate-200 rounded-lg focus:ring-esp-primary focus:border-esp-primary py-1.5 px-3 cursor-pointer outline-none shadow-sm text-esp-text"
     >
       <option value="newest">ใหม่ล่าสุด</option>
       <option value="oldest">เก่าที่สุด</option>
@@ -114,33 +114,33 @@ export function SidebarFilter({
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6">
+    <div className="bg-esp-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-slate-800">ตัวกรอง</h3>
+        <h3 className="font-bold text-esp-text">ตัวกรอง</h3>
         <button onClick={handleClearAll} className="text-xs text-rose-500 hover:text-rose-700 font-semibold underline cursor-pointer">
           Clear All
         </button>
       </div>
 
       <div>
-        <h4 className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">หมวดหมู่</h4>
+        <h4 className="text-xs font-bold text-esp-mutedblue mb-3 uppercase tracking-wider">หมวดหมู่</h4>
         <div className="space-y-2.5">
-          <label className="flex items-center gap-2.5 text-sm text-slate-600 cursor-pointer hover:text-slate-900 transition-colors">
+          <label className="flex items-center gap-2.5 text-sm text-slate-600 cursor-pointer hover:text-esp-text transition-colors">
             <input
               type="checkbox"
               checked={selected.length === 0}
               onChange={() => handleCheck('All', true)}
-              className="w-4 h-4 rounded border-slate-300 text-[#0092DF] focus:ring-[#0092DF]"
+              className="w-4 h-4 rounded border-slate-300 text-esp-primary focus:ring-esp-primary"
             />
-            <span className={selected.length === 0 ? "font-bold text-[#0092DF]" : ""}>ทั้งหมด (All)</span>
+            <span className={selected.length === 0 ? "font-bold text-esp-primary" : ""}>ทั้งหมด (All)</span>
           </label>
           {allCategories.map((cat) => (
-            <label key={cat} className="flex items-center gap-2.5 text-sm text-slate-600 cursor-pointer hover:text-slate-900 transition-colors">
+            <label key={cat} className="flex items-center gap-2.5 text-sm text-slate-600 cursor-pointer hover:text-esp-text transition-colors">
               <input
                 type="checkbox"
                 checked={selected.includes(cat)}
                 onChange={(e) => handleCheck(cat, e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-[#0092DF] focus:ring-[#0092DF]"
+                className="w-4 h-4 rounded border-slate-300 text-esp-primary focus:ring-esp-primary"
               />
               <span>{cat}</span>
             </label>
@@ -151,30 +151,30 @@ export function SidebarFilter({
       <div className="border-t border-slate-100 my-4"></div>
 
       <div>
-        <h4 className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">ระยะเวลาเรียน (ชม.)</h4>
+        <h4 className="text-xs font-bold text-esp-mutedblue mb-4 uppercase tracking-wider">ระยะเวลาเรียน (ชม.)</h4>
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between gap-2">
             <input
               type="number" value={min} onChange={(e) => setMin(e.target.value)}
               style={{ MozAppearance: 'textfield' }} 
-              className="w-12 px-1 py-1.5 text-center text-sm font-semibold text-[#0092DF] bg-cyan-50 border border-cyan-100 rounded-lg outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-12 px-1 py-1.5 text-center text-sm font-semibold text-esp-primary bg-esp-softblue border border-esp-lightblue rounded-lg outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
-            <span className="text-slate-400 text-xs font-bold">-</span>
+            <span className="text-esp-mutedblue text-xs font-bold">-</span>
             <input
               type="number" value={max} onChange={(e) => setMax(e.target.value)}
               style={{ MozAppearance: 'textfield' }}
-              className="w-12 px-1 py-1.5 text-center text-sm font-semibold text-[#0092DF] bg-cyan-50 border border-cyan-100 rounded-lg outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-12 px-1 py-1.5 text-center text-sm font-semibold text-esp-primary bg-esp-softblue border border-esp-lightblue rounded-lg outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </div>
           <div className="relative h-1.5 bg-slate-200 rounded-full mt-1 mb-2">
-            <div className="absolute h-full bg-[#0092DF] rounded-full" style={{ left: `${(Number(min) / 100) * 100}%`, right: `${100 - (Number(max) / 100) * 100}%` }}></div>
-            <input type="range" min="0" max="100" value={min} onChange={(e) => setMin(Math.min(Number(e.target.value), Number(max) - 1).toString())} className="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0092DF] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm" />
-            <input type="range" min="0" max="100" value={max} onChange={(e) => setMax(Math.max(Number(e.target.value), Number(min) + 1).toString())} className="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0092DF] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm" />
+            <div className="absolute h-full bg-esp-primary rounded-full" style={{ left: `${(Number(min) / 100) * 100}%`, right: `${100 - (Number(max) / 100) * 100}%` }}></div>
+            <input type="range" min="0" max="100" value={min} onChange={(e) => setMin(Math.min(Number(e.target.value), Number(max) - 1).toString())} className="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-esp-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-esp-primary [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm" />
+            <input type="range" min="0" max="100" value={max} onChange={(e) => setMax(Math.max(Number(e.target.value), Number(min) + 1).toString())} className="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-esp-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-esp-primary [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm" />
           </div>
         </div>
       </div>
 
-      <button onClick={handleApply} className="w-full py-2.5 bg-[#0B2545] hover:bg-[#134074] text-white font-bold text-sm rounded-xl shadow transition-colors mt-2">
+      <button onClick={handleApply} className="w-full py-2.5 bg-esp-text hover:bg-esp-primary text-esp-white font-bold text-sm rounded-xl shadow transition-colors mt-2">
         Apply
       </button>
     </div>
@@ -235,7 +235,7 @@ export function Pagination({ currentPage, totalPages }: { currentPage: number, t
             onClick={() => handlePageChange(page)}
             className={`w-10 h-10 rounded-xl font-bold transition-colors text-sm ${
               currentPage === page 
-                ? 'bg-[#0092DF] text-white shadow-sm' 
+                ? 'bg-esp-primary text-esp-white shadow-sm' 
                 : 'text-slate-600 hover:bg-slate-100 border border-transparent'
             }`}
           >
