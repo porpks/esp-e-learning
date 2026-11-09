@@ -1,5 +1,4 @@
 import React from 'react';
-import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import LearnRoomClient from './LearnRoomClient';
 
@@ -10,31 +9,26 @@ export default async function LearnRoomServerPage({ params }: { params: Promise<
   const resolvedParams = await params;
   const currentPath = resolvedParams.path;
 
-  const course = await prisma.course.findUnique({
-    where: { path: currentPath }, 
-    include: {
-      lessons: {
-        orderBy: { order: 'asc' },
-        include: {
-          subLessons: {
-            orderBy: { order: 'asc' },
-            include: {
-              documents: true,
-            },
-          },
-        },
-      },
-    },
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/courses/${currentPath}`, {
+    cache: 'no-store',
   });
+
+  if (!res.ok) {
+    notFound();
+  }
+
+  const data = await res.json();
+  const course = data.course;
 
   if (!course) {
     notFound();
   }
 
-  const formattedLessons = course.lessons.map((lesson) => ({
+  const formattedLessons = course.lessons.map((lesson: any) => ({
     id: lesson.id,
     title: lesson.title,
-    subLessons: lesson.subLessons.map((sub) => {
+    subLessons: lesson.subLessons.map((sub: any) => {
       const isDocument = sub.documents && sub.documents.length > 0;
       
       return {

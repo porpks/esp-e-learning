@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUser } from '@/lib/useUser'; 
+import { LogoutButton } from '@/components/AuthButtons';
 
 function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
@@ -103,16 +104,6 @@ export default function Navbar() {
     { name: 'Knowledge Base', path: '/knowledge-base' },
     { name: 'Q/A', path: '/faqs' },
   ];
-
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null); 
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
   
   const pathAvoid = ['/login', '/admin'];
   if (pathAvoid.some(path => pathname.includes(path))) {
@@ -323,12 +314,10 @@ export default function Navbar() {
 
                   <div className="border-t border-slate-100 my-1"></div>
 
-                  <button
-                    onClick={handleLogout}
+                  <LogoutButton 
+                    onClick={() => setIsProfileOpen(false)} 
                     className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 font-semibold transition-colors cursor-pointer"
-                  >
-                    Logout
-                  </button>
+                  />
                 </div>
               )}
             </div>

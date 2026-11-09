@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 export interface UserSession {
   id: number;
@@ -27,16 +28,30 @@ const notifyListeners = (user: UserSession | null) => {
 
 export const fetchUser = async (): Promise<UserSession | null> => {
   try {
-    const res = await fetch('/api/auth/session');
+    // 1. ดึง Token จาก Cookie
+    const token = Cookies.get('esp_token');
+    
+    // 2. แนบ Token ไปใน Header Authorization
+    const res = await fetch('/api/auth/session', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
     if (res.ok) {
       const data = await res.json();
       if (data.user) {
         notifyListeners(data.user);
         return data.user;
       }
+    } else {
+      notifyListeners(null);
     }
   } catch (error) {
     console.error('Failed to fetch user session:', error);
+    notifyListeners(null);
   }
   return null;
 };

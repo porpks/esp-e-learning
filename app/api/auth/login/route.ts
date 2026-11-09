@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 const ActiveDirectory = require('activedirectory2');
-import { createSession } from '@/lib/session';
+import { signToken } from '@/lib/auth';
 
 async function fetchEmpIdFromExternalDB(adUsername: string) {
   try {
@@ -61,23 +61,14 @@ export async function POST(request: Request) {
       });
 
       if (user) {
-        const sessionData = {
+        const token = await signToken({
           id: user.id,
           empId: user.empId,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          department: user.department,
-          team: user.team,
           role: user.role,
           isAdmin: user.isAdmin,
-          profileImage: user.profileImage || null,
-        };
+        });
 
-        await createSession(sessionData);
-
-        return NextResponse.json({ success: true, user });
+        return NextResponse.json({ success: true, token, user });
       }
     }
 
@@ -123,8 +114,6 @@ export async function POST(request: Request) {
     if (!realEmpId) {
       return NextResponse.json({ error: 'ไม่พบข้อมูลรหัสพนักงานในฐานข้อมูลกลาง' }, { status: 404 });
     }
-
-    console.log(`adUser found: ${JSON.stringify(adUser)} | realEmpId: ${realEmpId}`);
     
     let firstName = externalData.firstName;
     let lastName = externalData.lastName;
@@ -166,23 +155,15 @@ export async function POST(request: Request) {
       });
     }
 
-    const sessionData = {
+    const token = await signToken({
       id: user.id,
       empId: user.empId,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      department: user.department,
-      team: user.team,
       role: user.role,
       isAdmin: user.isAdmin,
-      profileImage: user.profileImage || null,
-    };
+    });
 
-    await createSession(sessionData);
-
-    return NextResponse.json({ success: true, user });
+    // 💡 ส่งคืน token ให้ Frontend
+    return NextResponse.json({ success: true, token, user });
 
   } catch (error: any) {
     console.error('System Error:', error);

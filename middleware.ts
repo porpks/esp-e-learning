@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from './lib/session';
 
-export async function middleware(request: NextRequest) {
-  const session = await getSession();
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('esp_token')?.value;
   const { pathname } = request.nextUrl;
 
-  if (!session && pathname !== '/login') {
+  if (!token && pathname !== '/login') {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (session && pathname === '/login') {
+  if (token && pathname === '/login') {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -23,7 +22,7 @@ export const config = {
   matcher: [
     /*
      * ครอบคลุมทุกหน้า ยกเว้น:
-     * - api routes (/api/...)
+     * - api routes (/api/...) -> ให้ API ตรวจสอบ Token ของตัวเอง
      * - static files (_next/static, _next/image, favicon.ico)
      * - public uploads (/uploads/...)
      */

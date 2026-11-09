@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/lib/useUser';
+import Cookies from 'js-cookie';
 
 function LoginForm() {
   const router = useRouter();
@@ -30,10 +31,13 @@ function LoginForm() {
       const data = await res.json();
 
       if (res.ok) {
-        // ล็อกอินผ่าน -> นำผู้ใช้ไปยัง Callback URL ที่ตั้งไว้
+        if (data.token) {
+          Cookies.set('esp_token', data.token, { expires: 1, path: '/' });
+        }
+
         setUser(data.user);
         router.push(callbackUrl);
-        router.refresh();
+        // router.refresh();
       } else {
         setError(data.error || 'การล็อกอินล้มเหลว');
       }
@@ -56,7 +60,8 @@ function LoginForm() {
           type="text" 
           value={username} 
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full px-4 py-2 bg-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={loading}
+          className="w-full px-4 py-2 bg-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           required
         />
       </div>
@@ -67,7 +72,8 @@ function LoginForm() {
           type="password" 
           value={password} 
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-2 bg-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={loading}
+          className="w-full px-4 py-2 bg-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           required
         />
       </div>
@@ -77,17 +83,16 @@ function LoginForm() {
         disabled={loading}
         className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors disabled:opacity-50 cursor-pointer"
       >
-        {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+        {loading ? 'Loading...' : 'Login'}
       </button>
     </form>
   );
 }
 
-// 2. หน้าหลักสำหรับ Export นำเอา Suspense มาห่อ LoginForm ไว้
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
-      <Suspense fallback={<div className="text-slate-400">กำลังโหลด...</div>}>
+      <Suspense fallback={<div className="text-slate-400">Loading...</div>}>
         <LoginForm />
       </Suspense>
     </div>

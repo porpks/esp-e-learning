@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import CourseCard, { CourseType } from '@/components/CourseCard';
 import { SearchInput, SortSelect, SidebarFilter, FadeTransition, Pagination } from '@/components/CourseInteractive'; 
@@ -13,7 +12,7 @@ interface PageProps {
     tab?: string;
     min?: string;
     max?: string;
-    page?: string; // 🌟 เพิ่ม page
+    page?: string;
   }>;
 }
 
@@ -23,10 +22,9 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   const searchQuery = resolvedParams.q || '';
   const activeTab = resolvedParams.tab || 'all';
   const sortBy = resolvedParams.sort || 'newest';
-  const minDur = parseInt(resolvedParams.min || '0', 10);
-  const maxDur = parseInt(resolvedParams.max || '100', 10);
+  const minDur = resolvedParams.min || '0';
+  const maxDur = resolvedParams.max || '100';
   
-  // 🌟 ดึงค่าหน้าปัจจุบัน (เริ่มต้นที่ 1)
   const currentPage = parseInt(resolvedParams.page || '1', 10);
   const ITEMS_PER_PAGE = 15;
   
@@ -37,53 +35,29 @@ export default async function CoursesPage({ searchParams }: PageProps) {
       : [resolvedParams.category];
   }
 
-  // ดึงข้อมูล Category
-  const uniqueCategoriesRaw = await prisma.course.groupBy({
-    by: ['category'],
-    where: { category: { notIn: ['Japanese Hub', 'Language', 'ภาษาญี่ปุ่น'] } }
+  const queryParams = new URLSearchParams();
+  if (searchQuery) queryParams.append('q', searchQuery);
+  if (sortBy) queryParams.append('sort', sortBy);
+  queryParams.append('min', minDur);
+  queryParams.append('max', maxDur);
+  selectedCategories.forEach(cat => queryParams.append('category', cat));
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  
+  const res = await fetch(`${baseUrl}/api/courses?${queryParams.toString()}`, {
+    cache: 'no-store', // บังคับให้ดึงข้อมูลใหม่เสมอ
+    // headers: { Authorization: `Bearer ${token}` } // 💡 หากเปิดระบบเช็ค Token ที่ API แล้ว ให้แนบ Header ตรงนี้
   });
   
-  const allCategories = uniqueCategoriesRaw
-    .map((c) => c.category)
-    .filter((c): c is string => c !== null && c !== '');
+  const data = await res.json();
+  const filteredCourses: CourseType[] = data.course || [];
 
-  // ดึงข้อมูล Course
-  const coursesData = await prisma.course.findMany({
-    where: { category: { notIn: ['Japanese Hub', 'Language', 'ภาษาญี่ปุ่น'] } },
-    include: { lessons: { include: { subLessons: true } } },
-    orderBy: sortBy === 'newest' ? { createdAt: 'desc' } : { createdAt: 'asc' },
+  const catRes = await fetch(`${baseUrl}/api/courses/categories`, {
+    cache: 'no-store',
   });
+  const catData = await catRes.json();
+  const allCategories = catData.categories || [];
 
-  const formattedCourses: CourseType[] = coursesData.map((course) => {
-    let totalSeconds = 0;
-    course.lessons.forEach((lesson) => {
-      lesson.subLessons.forEach((sub) => totalSeconds += sub.durationSec);
-    });
-    const hours = Math.max(1, Math.round(totalSeconds / 3600));
-
-    return {
-      id: course.id,
-      path: course.path,
-      title: course.title,
-      description: course.description || 'ไม่มีคำอธิบาย',
-      hours: `${hours} ชม.`,
-      category: course.category || 'General',
-      image: course.thumbnail || 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500&q=80',
-    };
-  });
-
-  // กรองข้อมูลทั้งหมดก่อน
-  const filteredCourses = formattedCourses.filter((course) => {
-    const hoursInt = parseInt(course.hours, 10);
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          course.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
-    const matchesDuration = hoursInt >= minDur && hoursInt <= maxDur;
-    
-    return matchesSearch && matchesCategory && matchesDuration;
-  });
-
-  // 🌟 คำนวณหาจำนวนหน้าทั้งหมด และตัด Array คอร์สให้เหลือแค่ 15 คอร์สของหน้านั้นๆ
   const totalItems = filteredCourses.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const paginatedCourses = filteredCourses.slice(
@@ -91,7 +65,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // 🌟 Key สำหรับ Animation ให้เฟดใหม่เมื่อเปลี่ยนหน้าด้วย
   const animationKey = `${searchQuery}-${selectedCategories.join('-')}-${minDur}-${maxDur}-${sortBy}-${currentPage}`;
 
   return (
